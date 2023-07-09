@@ -1,0 +1,15 @@
+absolute_pairwise_dists: 
+  # compute and sort pairwise distances and log n of them in a wandb.Table
+  # one can choose to log the n most similar pairs, n most dissimilar pairs,
+  # or n around the median pairs
+
+  # number of pairs to use for evaluation
+  num_pairs: 10
+  
+  mode:
+    # smallest pairwise distances
+    - similar 
+    # largest pairwise distances
+    - dissimilar
+    # pairs around the pairwise distances' median
+    # - median

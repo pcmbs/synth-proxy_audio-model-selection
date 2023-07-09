@@ -1,0 +1,38 @@
+# @package _global_
+
+defaults:
+  - _self_
+  - data: nsynth 
+  - hydra: default
+  - logger: wandb
+  - model: encodec48khz
+  - metrics: 
+    # - absolute_pairwise_dists # not really informative
+    - relative_pairwise_dists
+  - paths: default 
+
+  # experiment to perform (concret ones, not debug ones)
+  - experiment: null
+
+  # debug options
+  - debug: null
+
+# seed for random number generators in pytorch, numpy and python.random
+seed: 667
+
+# similarity function to use for all metrics
+similarity: pairwise_cosine_similarity
+
+# task name, determines output directory path
+task_name: ${model.name}
+
+
+
+
+
+
+
+
+
+
+

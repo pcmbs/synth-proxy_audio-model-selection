@@ -1,0 +1,10 @@
+.pytestcache/
+.vscode/
+notebooks/
+__pycache__/
+.DS_Store
+*.o
+*.pyc
+.env
+*.lock
+Thumbs.db

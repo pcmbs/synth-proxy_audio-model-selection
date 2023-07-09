@@ -1,0 +1,49 @@
+seed: 667
+similarity: pairwise_cosine_similarity
+task_name: ${model.name}
+data:
+  root: ${paths.data_dir}
+  sources:
+  - acoustic
+  - electric
+  - synthetic
+  audio_length: 4.0
+  batch_size: 32
+  num_samples: 3072
+  shuffle: true
+logger:
+  wandb:
+    _target_: wandb.init
+    dir: ${paths.output_dir}
+    mode: online
+    id: null
+    anonymous: null
+    project: audio_model_selection
+    group: ${model.name}
+    tags: []
+model:
+  encoder:
+    _target_: src.models.encodec.encoder.EncodecEncoder.encodec_model_48khz
+    repository: ${paths.ckpt_dir}
+    segment: ${data.audio_length}
+    overlap: 0.0
+  name: encodec_48khz
+metrics:
+  absolute_pairwise_dists:
+    num_pairs: 10
+    mode:
+    - similar
+    - dissimilar
+  relative_pairwise_dists:
+    num_samples: 10
+    n_neighbors: 5
+    mode:
+    - nearest
+    - linspace
+paths:
+  root_dir: ${oc.env:PROJECT_ROOT}
+  data_dir: ${oc.env:NSYNTH_DIR}
+  log_dir: ${paths.root_dir}/logs
+  ckpt_dir: ${paths.root_dir}/checkpoints
+  output_dir: ${hydra:runtime.output_dir}
+  work_dir: ${hydra:runtime.cwd}
