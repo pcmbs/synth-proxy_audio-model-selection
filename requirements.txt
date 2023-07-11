@@ -5,6 +5,7 @@ hydra-core
 hydra-colorlog
 omegaconf
 python-dotenv
+rich
 torch
 torchaudio
 torchinfo
