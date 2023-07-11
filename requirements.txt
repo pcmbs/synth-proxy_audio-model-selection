@@ -3,6 +3,7 @@ einops
 fastapi
 hydra-core
 hydra-colorlog
+lightning
 omegaconf
 python-dotenv
 rich
