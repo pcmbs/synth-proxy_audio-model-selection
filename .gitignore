@@ -1,7 +1,6 @@
 .pytestcache/
 .vscode/
 logs/
-notebooks/
 __pycache__/
 .DS_Store
 *.o
