@@ -1,4 +1,3 @@
-# pylint: disable=E1101:no-member,W1203,W0212
 import logging
 import sys
 from typing import Optional
@@ -134,6 +133,8 @@ def main(cfg: DictConfig) -> Optional[float]:
             "logger": logger,
         }
         # log_hyperparameters(object_dict)
+    
+    return logger
 
 
 if __name__ == "__main__":
