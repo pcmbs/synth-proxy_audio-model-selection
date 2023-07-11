@@ -1,5 +1,6 @@
 .pytestcache/
 .vscode/
+data/nsynth-lite
 logs/
 notebooks/
 __pycache__/
