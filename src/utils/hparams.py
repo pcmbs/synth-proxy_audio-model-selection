@@ -1,7 +1,6 @@
 # pylint: disable=W1203,E1101
 # Adapted from: https://github.com/ashleve/lightning-hydra-template/blob/main/src/utils/utils.py
 import os
-import typing as tp
 
 import torch
 import torch.nn as nn
@@ -9,12 +8,8 @@ from omegaconf import DictConfig
 
 import wandb
 
-WandbRunner = tp.Any
 
-
-def log_hyperparameters(
-    cfg: DictConfig, encoder: nn.Module, wandb_logger: WandbRunner, device: str
-) -> None:
+def log_hyperparameters(cfg: DictConfig, encoder: nn.Module, device: str) -> None:
     """
     log hparams to wandb.
     """
@@ -40,7 +35,7 @@ def log_hyperparameters(
     )  # TODO: account for reduction
 
     # send hparams to wandb
-    wandb_logger.log_hyperparams(hparams)
+    wandb.config = hparams
 
     # save hydra config in wandb
     wandb.save(
