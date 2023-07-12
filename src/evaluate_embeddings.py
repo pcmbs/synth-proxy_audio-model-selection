@@ -62,7 +62,6 @@ def main(cfg: DictConfig) -> Optional[float]:
         encoder.encoder.model,
         input_size=(1, encoder.channels, int(encoder.segment_length)),
     )
-    log.info(torchinfo_summary)
     #################### get embeddings
 
     embeddings, indices_from_batch = get_embeddings(

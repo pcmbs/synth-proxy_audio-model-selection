@@ -37,7 +37,7 @@ def log_hyperparameters(
     )  # TODO: account for reduction
 
     # add infos from torchinfos
-    hparams["total_mult_adds"] = f"{torchinfo_summary.total_mult_adds:.g}"
+    hparams["total_mult_adds"] = f"{torchinfo_summary.total_mult_adds:g}"
     hparams["params_size_MB"] = ModelStatistics.to_megabytes(
         torchinfo_summary.total_param_bytes
     )
