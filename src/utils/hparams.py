@@ -37,13 +37,13 @@ def log_hyperparameters(
     )  # TODO: account for reduction
 
     # add infos from torchinfos
-    hparams["total_mult_adds"] = f"{torchinfo_summary.total_mult_adds:g}"
-    hparams[
-        "params_size_MB"
-    ] = f"{ModelStatistics.to_megabytes(torchinfo_summary.total_param_bytes):0.2f}"
-    hparams[
-        "forbackward_size_MB"
-    ] = f"{ModelStatistics.to_megabytes(torchinfo_summary.total_output_bytes):0.2}"
+    hparams["total_mult_adds"] = torchinfo_summary.total_mult_adds
+    hparams["params_size_MB"] = ModelStatistics.to_megabytes(
+        torchinfo_summary.total_param_bytes
+    )
+    hparams["forbackward_size_MB"] = ModelStatistics.to_megabytes(
+        torchinfo_summary.total_output_bytes
+    )
     # send hparams to wandb
     wandb.config.update(hparams)
 
