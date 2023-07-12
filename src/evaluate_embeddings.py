@@ -129,9 +129,7 @@ def main(cfg: DictConfig) -> Optional[float]:
 
     if logger:
         log.info("Logging hyperparameters...")
-        log_hyperparameters(
-            cfg=cfg, encoder=encoder, wandb_logger=logger, device=DEVICE
-        )
+        log_hyperparameters(cfg=cfg, encoder=encoder, device=DEVICE)
 
 
 if __name__ == "__main__":
