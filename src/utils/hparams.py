@@ -5,11 +5,13 @@ import os
 import torch
 import torch.nn as nn
 from omegaconf import DictConfig
-
+from torchinfo import ModelStatistics
 import wandb
 
 
-def log_hyperparameters(cfg: DictConfig, encoder: nn.Module, device: str) -> None:
+def log_hyperparameters(
+    cfg: DictConfig, encoder: nn.Module, torchinfo_summary: ModelStatistics, device: str
+) -> None:
     """
     log hparams to wandb.
     """
@@ -34,10 +36,19 @@ def log_hyperparameters(cfg: DictConfig, encoder: nn.Module, device: str) -> Non
         encoder(one_second_input)[0].shape
     )  # TODO: account for reduction
 
+    # add infos from torchinfos
+    hparams["total_mult_adds"] = f"{torchinfo_summary.total_mult_adds:.g}"
+    hparams["params_size_MB"] = ModelStatistics.to_megabytes(
+        torchinfo_summary.total_param_bytes
+    )
+    hparams["forbackward_size_MB"] = ModelStatistics.to_megabytes(
+        torchinfo_summary.total_param_bytes
+    )
     # send hparams to wandb
     wandb.config.update(hparams)
 
     # save hydra config in wandb
     wandb.save(
         glob_str=os.path.join(cfg.paths.get("output_dir"), ".hydra", "*.yaml"),
-        base_path=cfg.paths.get("output_dir"))
+        base_path=cfg.paths.get("output_dir"),
+    )

@@ -58,10 +58,11 @@ def main(cfg: DictConfig) -> Optional[float]:
         logger = hydra.utils.call(cfg.logger)
 
     # print torchinfo model summary
-    summary(
+    torchinfo_summary = summary(
         encoder.encoder.model,
         input_size=(1, encoder.channels, int(encoder.segment_length)),
     )
+    log.info(torchinfo_summary)
     #################### get embeddings
 
     embeddings, indices_from_batch = get_embeddings(
@@ -129,7 +130,9 @@ def main(cfg: DictConfig) -> Optional[float]:
 
     if logger:
         log.info("Logging hyperparameters...")
-        log_hyperparameters(cfg=cfg, encoder=encoder, device=DEVICE)
+        log_hyperparameters(
+            cfg=cfg, encoder=encoder, torchinfo_summary=torchinfo_summary, device=DEVICE
+        )
 
 
 if __name__ == "__main__":
