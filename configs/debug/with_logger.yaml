@@ -2,5 +2,16 @@
 
 defaults:  
   - _self_  
+  - override /hydra/hydra_logging@_group_: none 
+  - override /hydra/job_logging@_group_: none 
+  
+hydra:  
+  output_subdir: null  
+  run:  
+    dir: .
 
-logger: wandb
+data:
+  num_samples: 32
+  audio_length: 1.0
+
+task_name: "debug"

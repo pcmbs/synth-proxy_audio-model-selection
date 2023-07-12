@@ -1,25 +1,27 @@
+# pylint: disable=W1203,C0413,W0212
+
 import logging
 import sys
-from typing import Optional
 from pathlib import Path
+from typing import Optional
 
 import hydra
 import torch
-
 from dotenv import load_dotenv
 from lightning import seed_everything
 from omegaconf import DictConfig
-
 from torch.utils.data import DataLoader
 from torchinfo import summary
 from torchmetrics import functional as tm_functional
 
+# add parents directory to sys.path.
+sys.path.insert(1, str(Path(__file__).parent.parent))
 
 from src.data.nsynth import NSynthDataset
 from src.models.encodec.encoder import EncodecEncoder
-
-from src.utils.logger import LogAbsolutePairwiseDists, LogRelativePairwiseDists
 from src.utils.embeddings import get_embeddings
+from src.utils.hparams import log_hyperparameters
+from src.utils.logger import LogAbsolutePairwiseDists, LogRelativePairwiseDists
 
 load_dotenv()  # take environment variables from .env for hydra configs
 
@@ -58,7 +60,7 @@ def main(cfg: DictConfig) -> Optional[float]:
     # print torchinfo model summary
     summary(
         encoder.encoder.model,
-        input_size=(cfg.data.batch_size, encoder.channels, int(encoder.segment_length)),
+        input_size=(1, encoder.channels, int(encoder.segment_length)),
     )
     #################### get embeddings
 
@@ -127,20 +129,15 @@ def main(cfg: DictConfig) -> Optional[float]:
 
     if logger:
         log.info("Logging hyperparameters...")
-        object_dict = {
-            "cfg": cfg,
-            "model": encoder,
-            "logger": logger,
-        }
-        # log_hyperparameters(object_dict)
-    
-    return logger
+        log_hyperparameters(
+            cfg=cfg, encoder=encoder, wandb_logger=logger, device=DEVICE
+        )
 
 
 if __name__ == "__main__":
     # check if program in debug mode, and set the corresponding config if so
     gettrace = getattr(sys, "gettrace", None)
     if gettrace():
-        sys.argv = ["audio_model_analysis.py", "debug=default"]
-        # sys.argv = ["audio_model_analysis.py", "debug=with_logger"]
+        # sys.argv = ["audio_model_analysis.py", "debug=default"]
+        sys.argv = ["audio_model_analysis.py", "debug=with_logger"]
     main()  # pylint: disable=no-value-for-parameter

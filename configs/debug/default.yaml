@@ -13,7 +13,7 @@ hydra:
 logger: null
 
 data:
-  num_samples: 512
+  num_samples: 256
   audio_length: 1.0
 
 task_name: "debug"

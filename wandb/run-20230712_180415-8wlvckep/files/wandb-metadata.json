@@ -1,0 +1,44 @@
+{
+    "os": "macOS-10.13.6-x86_64-i386-64bit",
+    "python": "3.10.12",
+    "heartbeatAt": "2023-07-12T16:04:16.821877",
+    "startedAt": "2023-07-12T16:04:15.855483",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "debug=with_logger"
+    ],
+    "state": "running",
+    "program": "/Users/paolocombes/Desktop/pc_docs/MASTER_THESIS/code/preset-embedding_audio-model-colab/src/evaluate_embeddings.py",
+    "codePath": "src/evaluate_embeddings.py",
+    "git": {
+        "remote": "https://github.com/pcmbs/preset-embedding_audio-model-colab.git",
+        "commit": "9acf4950804dcffbd46edb776d88be132c4db469"
+    },
+    "email": "paolocombes@gmail.com",
+    "root": "/Users/paolocombes/Desktop/pc_docs/MASTER_THESIS/code/preset-embedding_audio-model-colab",
+    "host": "MBP-Paolo.fritz.box",
+    "username": "paolocombes",
+    "executable": "/Users/paolocombes/.pyenv/versions/3.10.12/bin/python",
+    "cpu_count": 2,
+    "cpu_count_logical": 4,
+    "cpu_freq": {
+        "current": 2400,
+        "min": 2400,
+        "max": 2400
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2400,
+            "min": 2400,
+            "max": 2400
+        }
+    ],
+    "disk": {
+        "total": 476.7444305419922,
+        "used": 384.32958602905273
+    },
+    "memory": {
+        "total": 8.0
+    }
+}
