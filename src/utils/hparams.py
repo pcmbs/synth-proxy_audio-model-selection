@@ -35,11 +35,7 @@ def log_hyperparameters(cfg: DictConfig, encoder: nn.Module, device: str) -> Non
     )  # TODO: account for reduction
 
     # send hparams to wandb
-    wandb.config = hparams
+    wandb.config.update(hparams)
 
     # save hydra config in wandb
-    wandb.save(
-        glob_str=os.path.join(cfg.paths.get("output_dir"), ".hydra", "*.log"),
-        base_path=os.path.join(cfg.paths.get("output_dir")),
-        policy="end",
-    )
+    wandb.save(os.path.join(cfg.paths.get("output_dir"), ".hydra", "*.log"))
