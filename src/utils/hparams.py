@@ -38,4 +38,6 @@ def log_hyperparameters(cfg: DictConfig, encoder: nn.Module, device: str) -> Non
     wandb.config.update(hparams)
 
     # save hydra config in wandb
-    wandb.save(os.path.join(cfg.paths.get("output_dir"), ".hydra", "*.log"))
+    wandb.save(
+        glob_str=os.path.join(cfg.paths.get("output_dir"), ".hydra", "*.yaml"),
+        base_path=cfg.paths.get("output_dir"))
