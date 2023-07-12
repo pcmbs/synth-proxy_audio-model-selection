@@ -39,7 +39,7 @@ def log_hyperparameters(cfg: DictConfig, encoder: nn.Module, device: str) -> Non
 
     # save hydra config in wandb
     wandb.save(
-        path=os.path.join(cfg.paths.get("output_dir"), ".hydra", "*.log"),
+        glob_str=os.path.join(cfg.paths.get("output_dir"), ".hydra", "*.log"),
         base_path="./hydra",  # maybe needs .hydra
         policy="end",
     )
