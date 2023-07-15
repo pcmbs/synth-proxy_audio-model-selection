@@ -94,7 +94,7 @@ frequency_mod = ParameterVariation(
 )
 
 lfo_amount_on_filter = ParameterVariation(
-    preset="LD Pozer Lead TAL",
+    preset="LD Power Lead TAL",
     base_param_name="Lfo 2 Amount",
     param_idx=31,
     interval=(0.0, 0.33),
@@ -111,7 +111,8 @@ lfo_amount_on_volume = ParameterVariation(
     interval=(0.75, 1.0),
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     # set `Envelop Amount` to 0.0
-    extra_params=((46, 1.0), (48, 1.0), (73, 0.0)),
+    # set `Delay Wet` to 0.0
+    extra_params=((46, 1.0), (48, 1.0), (73, 0.0), (78, 0.0)),
 )
 
 lfo_rate_on_filter = ParameterVariation(
@@ -133,7 +134,8 @@ lfo_rate_on_volume = ParameterVariation(
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     # set `Envelop Amount` to 0.0
     # set `Lfo 2 Amount` to 0.95
-    extra_params=((46, 1.0), (48, 1.0), (73, 0.0), (31, 0.95)),
+    # set `Delay Wet` to 0.0
+    extra_params=((46, 1.0), (48, 1.0), (73, 0.0), (31, 0.95), (78, 0.0)),
 )
 
 pitch_coarse = ParameterVariation(
