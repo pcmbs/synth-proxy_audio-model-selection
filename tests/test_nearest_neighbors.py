@@ -1,7 +1,10 @@
 # pylint: disable=E1101:no-member
 import pytest
 import torch
-from torchmetrics.functional import pairwise_cosine_similarity, pairwise_euclidean_distance
+from torchmetrics.functional import (
+    pairwise_cosine_similarity,
+    pairwise_euclidean_distance,
+)
 
 from src.utils.distances import nearest_neighbor
 

@@ -3,7 +3,9 @@ import torch
 
 
 def global_argsort(
-    distance_matrix: torch.Tensor, return_sorted_values: bool = False, descending: bool = False
+    distance_matrix: torch.Tensor,
+    return_sorted_values: bool = False,
+    descending: bool = False,
 ) -> torch.Tensor:
     """
     Given a distance matrix, this function returns the indices of the pairs ordered by distance.
@@ -47,15 +49,16 @@ def global_argsort(
 
 
 def nearest_neighbor(
-    distance_matrix: torch.Tensor, num_samples: int, descending: bool = False
+    distance_matrix: torch.Tensor, num_samples: int = None, descending: bool = False
 ) -> torch.Tensor:
     """
     Retrieve the nearest neighbors of `num_samples` randomly chosen samples from a distance matrix.
 
     Args:
         dist_mat (torch.Tensor): A 2D tensor representing the distance matrix.
-        num_samples (int): The number of samples to compute nearest neighbors for.
-        descending (bool, optional): A flag indicating to sort in descending order. (Defaults: False).
+        num_samples (int): The number of samples to compute nearest neighbors for. Compute for all if None.
+        (Default: None)
+        descending (bool, optional): A flag indicating to sort in descending order. (Default: False).
 
     Raises:
         ValueError: If the distance matrix is not 2D or symmetric.
@@ -69,24 +72,34 @@ def nearest_neighbor(
     """
     _check_symmetry(distance_matrix)
 
-    # randomly choose samples to compute nearest neighbors for
-    weights = torch.ones(distance_matrix.shape[0])
-    sample_indices = torch.multinomial(input=weights, num_samples=num_samples, replacement=False)
+    num_rows = distance_matrix.shape[0]
+    num_cols = distance_matrix.shape[1]
 
+    # randomly choose samples to compute nearest neighbors for if required and
     # create a mask to omit diagonal entries and to avoid unnecessary sorting rows
-    mask = torch.zeros_like(distance_matrix, dtype=torch.bool)
-    mask[sample_indices] = True
+    if num_samples is None:
+        num_samples = num_rows
+        mask = torch.ones_like(distance_matrix, dtype=torch.bool)
+    else:
+        sample_indices = torch.randperm(num_rows)[:num_samples]
+        mask = torch.zeros_like(distance_matrix, dtype=torch.bool)
+        mask[sample_indices] = True
+
     mask.fill_diagonal_(False)
-    distances_to_sort = distance_matrix.masked_select(mask).reshape(num_samples, distance_matrix.shape[1] - 1)
+    distances_to_sort = distance_matrix.masked_select(mask).reshape(
+        num_samples, num_cols - 1
+    )
 
     # retrieve indices of the pairwise distances to be sorted for each sample
-    sorted_indices = torch.nonzero(mask).reshape(num_samples, distance_matrix.shape[1] - 1, 2)
+    sorted_indices = torch.nonzero(mask).reshape(num_samples, num_cols - 1, 2)
 
     # sort the pairwise distances for each sample
     sorted_distance_indices = distances_to_sort.argsort(dim=-1, descending=descending)
 
     # retrieve the indices from the distance matrix in the sorted order for each anchor
-    sorted_indices = sorted_indices[torch.arange(num_samples).unsqueeze(1), sorted_distance_indices]
+    sorted_indices = sorted_indices[
+        torch.arange(num_samples).unsqueeze(1), sorted_distance_indices
+    ]
 
     return sorted_indices
 
@@ -96,3 +109,28 @@ def _check_symmetry(dist_mat: torch.Tensor) -> None:
         raise ValueError("The given distance matrix must be 2D and square.")
     if not torch.allclose(dist_mat.transpose(0, 1), dist_mat):
         raise ValueError("The given distance matrix must be symmetric.")
+
+
+if __name__ == "__main__":
+    # TODO: refactor that in a function taking a similarity matrix as input, then refactor the main script
+    from torchmetrics.functional import pairwise_manhattan_distance, pearson_corrcoef
+
+    NUM_SAMPLES = 10
+
+    embeddings = torch.rand((1, 20)) + torch.arange(NUM_SAMPLES).reshape(NUM_SAMPLES, 1)
+
+    dist_mat = pairwise_manhattan_distance(embeddings)
+
+    indices = nearest_neighbor(dist_mat)
+
+    ranking_from_first = indices[0, :, 1].type(torch.float)
+    ranking_from_last = indices[-1, :, 1].type(torch.float)
+
+    target_from_first = torch.arange(1, NUM_SAMPLES).type(torch.float)
+    target_from_last = target_from_first.flip(0) - 1
+    corrcoeff_from_first = pearson_corrcoef(ranking_from_first, target_from_first)
+    corrcoeff_from_last = pearson_corrcoef(ranking_from_last, target_from_last)
+
+    avg_corrcoeff = (corrcoeff_from_first + corrcoeff_from_last) / 2
+
+    print("breakpoint me!")

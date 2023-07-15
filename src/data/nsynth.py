@@ -51,10 +51,14 @@ class NSynthDataset(Dataset):
 
         self.root = root / f"nsynth-{subset}"
         if not self.root.is_dir():
-            raise ValueError("The given root path is not a directory." f"\nI got {self.root}")
+            raise ValueError(
+                "The given root path is not a directory." f"\nI got {self.root}"
+            )
 
         if not (self.root / "examples.json").is_file():
-            raise ValueError("The given root path does not contain an `examples.json` file.")
+            raise ValueError(
+                "The given root path does not contain an `examples.json` file."
+            )
 
         log.info(f"Loading NSynth data from split {self.subset} at {self.root}")
 
@@ -62,9 +66,17 @@ class NSynthDataset(Dataset):
             self.attrs = json.load(f)
 
         if families:
-            self.attrs = {k: a for k, a in self.attrs.items() if a["instrument_family_str"] in families}
+            self.attrs = {
+                k: a
+                for k, a in self.attrs.items()
+                if a["instrument_family_str"] in families
+            }
         if sources:
-            self.attrs = {k: a for k, a in self.attrs.items() if a["instrument_source_str"] in sources}
+            self.attrs = {
+                k: a
+                for k, a in self.attrs.items()
+                if a["instrument_source_str"] in sources
+            }
 
         log.info(f"\tFound {len(self)} samples.")
 
