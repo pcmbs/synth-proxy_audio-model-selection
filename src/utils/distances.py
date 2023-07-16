@@ -56,8 +56,8 @@ def nearest_neighbor(
 
     Args:
         dist_mat (torch.Tensor): A 2D tensor representing the distance matrix.
-        num_samples (int): The number of samples to compute nearest neighbors for. Compute for all if None.
-        (Default: None)
+        num_samples (int): The number of samples to compute nearest neighbors for. Compute for all if None
+        (however it might be preferable to directly use torch.argosort for that). (Default: None)
         descending (bool, optional): A flag indicating to sort in descending order. (Default: False).
 
     Raises:
@@ -112,7 +112,7 @@ def _check_symmetry(dist_mat: torch.Tensor) -> None:
 
 
 if __name__ == "__main__":
-    # TODO: refactor that in a function taking a similarity matrix as input, then refactor the main script
+    # TODO: move that in test should return 1
     from torchmetrics.functional import pairwise_manhattan_distance, pearson_corrcoef
 
     NUM_SAMPLES = 10
@@ -121,10 +121,15 @@ if __name__ == "__main__":
 
     dist_mat = pairwise_manhattan_distance(embeddings)
 
-    indices = nearest_neighbor(dist_mat)
+    # indices = nearest_neighbor(dist_mat)
 
-    ranking_from_first = indices[0, :, 1].type(torch.float)
-    ranking_from_last = indices[-1, :, 1].type(torch.float)
+    # ranking_from_first = indices[0, :, 1].type(torch.float)
+    # ranking_from_last = indices[-1, :, 1].type(torch.float)
+
+    indices = torch.argsort(dist_mat, dim=1)
+
+    ranking_from_first = indices[0, 1:].float()
+    ranking_from_last = indices[-1, 1:].float()
 
     target_from_first = torch.arange(1, NUM_SAMPLES).type(torch.float)
     target_from_last = target_from_first.flip(0) - 1

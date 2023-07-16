@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from .audio import convert_audio
 
 
-def get_embeddings(
+def compute_embeddings(
     encoder: nn.Module,
     dataloader: DataLoader,
     num_samples: int,
@@ -24,6 +24,7 @@ def get_embeddings(
         encoder (nn.Module): The encoder module used to compute embeddings.
         dataloader (DataLoader): The dataloader containing the data samples.
         num_samples (int): The total number of samples to generate embeddings for.
+        Pass a negative value to generate embeddings for all samples.
         data_sample_rate (int): The sample rate of the data.
         encoder_sample_rate (int): The desired sample rate for the encoder.
         encoder_channels (int): The number of input channels for the encoder.
@@ -31,27 +32,28 @@ def get_embeddings(
         device (str): The device to perform computations on.
 
     Returns:
-        tuple[torch.Tensor, list[int]]: A tuple containing the computed embeddings and a list of indices returned by the dataloader.
+        tuple[torch.Tensor, list[int]]: A tuple containing the computed embeddings
+        and a list of metadata returned by the dataloader.
     """
-    # instantiate progress bar
-    pbar = tqdm(
-        enumerate(dataloader),
-        dynamic_ncols=True,
-        desc="Computing embeddings",
-        total=num_samples // dataloader.batch_size,
+    # initialize tensor to store embeddings and a list of indices returned by the dataloader
+    embeddings = []
+    metadata = []
+
+    num_batches = (
+        num_samples // dataloader.batch_size if num_samples > -1 else len(dataloader)
     )
 
-    # initialize tensor to store embeddings and a list of indices returned by the dataloader
-    embeddings = torch.tensor([]).to(device)
-    indices_from_batch = []
-
     with torch.no_grad():
-        for i, batch in pbar:
-            if i * dataloader.batch_size >= num_samples:
+        for i, batch in tqdm(
+            enumerate(dataloader),
+            dynamic_ncols=True,
+            desc="Computing embeddings",
+            total=num_batches,
+        ):
+            if i >= num_batches:
                 break
 
-            audio, indices = batch
-            indices_from_batch.extend(indices)
+            audio, batch_metadata = batch
             audio = convert_audio(
                 audio=audio,
                 sample_rate=data_sample_rate,
@@ -61,7 +63,8 @@ def get_embeddings(
             )
             audio = audio.to(device)
 
-            embeddings_from_batch = encoder(audio)[0].detach()
-            embeddings = torch.cat([embeddings, embeddings_from_batch], dim=0)
+            batch_embeddings = encoder(audio)[0].detach()
+            embeddings.append(batch_embeddings)
+            metadata.extend(batch_metadata)
 
-    return embeddings, indices_from_batch
+    return torch.cat(embeddings, dim=0), metadata

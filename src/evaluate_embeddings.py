@@ -19,7 +19,7 @@ sys.path.insert(1, str(Path(__file__).parent.parent))
 
 from src.data.nsynth.nsynth_dataset import NSynthDataset
 from src.models.encodec.encoder import EncodecEncoder
-from src.utils.embeddings import get_embeddings
+from src.utils.embeddings import compute_embeddings
 from src.utils.hparams import log_hyperparameters
 from src.utils.logger import LogAbsolutePairwiseDists, LogRelativePairwiseDists
 
@@ -64,7 +64,7 @@ def main(cfg: DictConfig) -> Optional[float]:
     )
     #################### get embeddings
 
-    embeddings, indices_from_batch = get_embeddings(
+    embeddings, indices_from_batch = compute_embeddings(
         encoder=encoder,
         dataloader=nsynth_dataloader,
         num_samples=cfg.data.num_samples,
