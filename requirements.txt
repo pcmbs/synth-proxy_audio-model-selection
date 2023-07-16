@@ -5,6 +5,7 @@ hydra-core
 hydra-colorlog
 lightning
 omegaconf
+pedalboard
 python-dotenv
 rich
 soundfile
