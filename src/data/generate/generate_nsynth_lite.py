@@ -4,14 +4,18 @@ script to randomly select samples from NSynth dataset and export them
 import json
 import shutil
 from pathlib import Path
-
+import os
 import numpy as np
+from dotenv import load_dotenv
 
+load_dotenv()
 
 ####################### Config
 
 # number of samples to randomly select
 N_DATA = 20_000
+
+PROJECT_ROOT = os.getenv("PROJECT_ROOT")
 
 # path to NSynth dataset
 NSYNTH_PATH = Path(
@@ -19,9 +23,8 @@ NSYNTH_PATH = Path(
 )  # -> 953 different sources
 
 # path to exported files
-EXPORT_PATH = Path(
-    "/Users/paolocombes/Desktop/pc_docs/MASTER_THESIS/external_datasets/nsynth-lite/nsynth-train"
-)
+EXPORT_PATH = PROJECT_ROOT / "data" / "nsynth-lite" / "nsynth-train"
+
 if not EXPORT_PATH.exists():  # create export path
     (EXPORT_PATH / "audio").mkdir(parents=True)
 

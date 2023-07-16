@@ -1,9 +1,14 @@
 """
 Script used to extract TAL-Noisemaker factory presets and store them in a json file.
 """
-from pathlib import Path
-from pedalboard import load_plugin
 import json
+import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+from pedalboard import load_plugin
+
+load_dotenv()
 
 ####################### Useful links
 ### Pedalboard
@@ -15,15 +20,20 @@ import json
 # is not cool for dawdreamer, hence parameter float values are accessed using
 # synth._parameters.raw_value
 
+# TAL-NoiseMaker can be downloaded at:
+# https://tal-software.com/products/tal-noisemaker
+
+# TAL-NoiseMaker presets can be downloaded at:
+# https://tal-software.com//downloads/presets/TAL-NoiseMaker%20vst3.zip
 
 ####################### Setup
-ROOT = Path("/Users/paolocombes/Desktop/pc_docs/MASTER_THESIS/external_datasets")
-PATH_TO_PLUGIN = ROOT / "TAL-NoiseMaker.vst3"
-PRESET_FOLDER = ROOT / "TAL-NoiseMaker vst3"
-
+PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT"))
+PATH_TO_TAL_FOLDER = PROJECT_ROOT / "data" / "TAL-NoiseMaker"
+PATH_TO_PLUGIN = PATH_TO_TAL_FOLDER / "TAL-NoiseMaker.vst3"
+PATH_TO_PRESETS = PATH_TO_TAL_FOLDER / "TAL-NoiseMaker vst3"
 
 # path to TAL-NoiseMaker presets
-paths_to_presets = sorted(PRESET_FOLDER.glob("*.vstpreset"))
+paths_to_presets = sorted(PATH_TO_PRESETS.glob("*.vstpreset"))
 print(f"Found {len(paths_to_presets)} presets")
 
 # Load TAL-NoiseMaker
@@ -33,9 +43,6 @@ synth = load_plugin(
 )
 
 ####################### export presets
-# for i in range(89):  # parameters outside this range are not necessary
-#     param = synth._parameters[i]  # pylint: disable=W0212
-#     print(f"index: {i}, name: {param.name}")
 
 presets = {}
 
@@ -48,7 +55,9 @@ for preset in paths_to_presets:
             {"index": param.index, "name": param.name, "value": param.raw_value}
         )
 
-with open(ROOT / "noisemaker_presets.json", "w", encoding="utf-8") as f:
+with open(
+    PATH_TO_TAL_FOLDER / "tal_noisemaker_presets.json", "w", encoding="utf-8"
+) as f:
     json.dump(presets, f)
 
-print(f"noisemaker_presets.json saved in {str(ROOT)}")
+print(f"noisemaker_presets.json saved in {str(PATH_TO_TAL_FOLDER)}")
