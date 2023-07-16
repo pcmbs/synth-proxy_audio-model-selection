@@ -1,1 +1,1 @@
-from src.data.nsynth.nsynth_dataset import NSynthDataset
+from .nsynth_dataset import NSynthDataset

@@ -1,1 +1,2 @@
-from src.data import nsynth
+from .nsynth import nsynth_dataset
+from .tal_noisemaker import noisemaker_dataset

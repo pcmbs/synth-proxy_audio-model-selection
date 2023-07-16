@@ -4,7 +4,7 @@ import torch.nn as nn
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 
-from src.utils.audio import convert_audio
+from .audio import convert_audio
 
 
 def get_embeddings(

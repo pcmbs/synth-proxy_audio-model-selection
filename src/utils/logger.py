@@ -6,7 +6,7 @@ from typing import Sequence
 import torch
 import wandb
 from torch.utils.data import Dataset
-from src.utils.distances import global_argsort, nearest_neighbor
+from .distances import global_argsort, nearest_neighbor
 
 # logger for this file
 log = logging.getLogger(__name__)
@@ -93,7 +93,9 @@ class LogAbsolutePairwiseDists:
 
     def _get_n_around_median(self, n: int) -> torch.Tensor:
         index_median = (self.sorted_dists == self.sorted_dists.median()).argwhere()
-        index_median = index_median[0] if len(index_median) != 1 else index_median  # if not unique
+        index_median = (
+            index_median[0] if len(index_median) != 1 else index_median
+        )  # if not unique
         lower_index = int(index_median - n // 2)
         upper_index = int(index_median + n // 2)
         indices_around_median = torch.arange(lower_index, upper_index)
@@ -101,7 +103,9 @@ class LogAbsolutePairwiseDists:
         distances = self.sorted_dists[indices_around_median]
         return indices, distances
 
-    def _generate_log_table(self, indices: torch.Tensor, dists: torch.Tensor) -> wandb.Table:
+    def _generate_log_table(
+        self, indices: torch.Tensor, dists: torch.Tensor
+    ) -> wandb.Table:
         data_to_log = []
         columns = ["distance", "sample 1", "sample_2"]
         for i, pair in enumerate(indices):
@@ -162,7 +166,9 @@ class LogRelativePairwiseDists:
 
         self.dataset = dataset
 
-    def log_n_neighbors(self, n: int, mode: Sequence[str] = ("nearest", "linspace")) -> None:
+    def log_n_neighbors(
+        self, n: int, mode: Sequence[str] = ("nearest", "linspace")
+    ) -> None:
         """
         Logs the nearest or farthest n neighbors of a given point in the dataset or a set of n neighbors
         equally spaced using `linspace` mode.
@@ -181,7 +187,10 @@ class LogRelativePairwiseDists:
             "nearest": self.sorted_indices[:, :n],
             "farthest": self.sorted_indices[:, -n:].flip(1),
             "linspace": self.sorted_indices[
-                :, torch.linspace(0, len(self.indices_from_batch) - 2, n, dtype=torch.long)
+                :,
+                torch.linspace(
+                    0, len(self.indices_from_batch) - 2, n, dtype=torch.long
+                ),
             ],
         }
 
