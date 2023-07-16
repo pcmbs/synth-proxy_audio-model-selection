@@ -10,7 +10,7 @@ import typing as tp
 import numpy as np
 import torch.nn as nn
 
-from . import SConv1d, SLSTM
+from . import SLSTM, SConv1d
 
 
 class SEANetResnetBlock(nn.Module):

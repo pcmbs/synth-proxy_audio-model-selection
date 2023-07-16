@@ -92,7 +92,7 @@ class NSynthDataset(Dataset):
 
     def __len__(self):
         return len(self.attrs)
-
+    
     def __str__(self):
         return f"NSynthDataset: {len(self):>7} samples in subset {self.subset}"
 
