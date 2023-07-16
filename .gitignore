@@ -13,6 +13,5 @@ __pycache__/
 logs/
 notebooks/
 
-data/TAL-NoiseMaker/
-!data/TAL-NoiseMaker/tal_noisemaker_presets.json
-data/nsynth-lite
+data/TAL-NoiseMaker/*vst3
+data/nsynth-lite/
