@@ -17,7 +17,7 @@ from torchmetrics import functional as tm_functional
 # add parents directory to sys.path.
 sys.path.insert(1, str(Path(__file__).parent.parent))
 
-from src.data.nsynth import NSynthDataset
+from src.data.nsynth.nsynth_dataset import NSynthDataset
 from src.models.encodec.encoder import EncodecEncoder
 from src.utils.embeddings import get_embeddings
 from src.utils.hparams import log_hyperparameters
