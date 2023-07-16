@@ -10,8 +10,7 @@ import typing as tp
 import numpy as np
 import torch.nn as nn
 
-from src.models.encodec.conv import SConv1d
-from src.models.encodec.lstm import SLSTM
+from . import SConv1d, SLSTM
 
 
 class SEANetResnetBlock(nn.Module):
@@ -45,7 +44,9 @@ class SEANetResnetBlock(nn.Module):
         true_skip: bool = True,
     ):
         super().__init__()
-        assert len(kernel_sizes) == len(dilations), "Number of kernel sizes should match number of dilations"
+        assert len(kernel_sizes) == len(
+            dilations
+        ), "Number of kernel sizes should match number of dilations"
         act = getattr(nn, activation)
         hidden = dim // compress
         block = []
@@ -71,7 +72,13 @@ class SEANetResnetBlock(nn.Module):
             self.shortcut = nn.Identity()
         else:
             self.shortcut = SConv1d(
-                dim, dim, kernel_size=1, norm=norm, norm_kwargs=norm_params, causal=causal, pad_mode=pad_mode
+                dim,
+                dim,
+                kernel_size=1,
+                norm=norm,
+                norm_kwargs=norm_params,
+                causal=causal,
+                pad_mode=pad_mode,
             )
 
     def forward(self, x):

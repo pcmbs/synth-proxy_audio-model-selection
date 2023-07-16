@@ -14,7 +14,7 @@ import numpy as np
 import torch
 from torch import nn
 
-from src.models.encodec.seanet import SEANetEncoder
+from . import SEANetEncoder
 
 EncodedFrame = tp.Tuple[torch.Tensor, tp.Optional[torch.Tensor]]
 
