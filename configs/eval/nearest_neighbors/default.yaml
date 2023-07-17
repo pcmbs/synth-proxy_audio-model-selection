@@ -1,0 +1,3 @@
+defaults:
+  - data: nsynth_dataset
+  - metric: relative_pairwise_dists

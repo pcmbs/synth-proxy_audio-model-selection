@@ -7,7 +7,7 @@ load_dotenv()  # take environment variables from .env for hydra config
 
 
 @hydra.main(
-    version_base=None, config_path="../../configs", config_name="evaluate_embeddings"
+    version_base=None, config_path="../configs", config_name="evaluate_embeddings"
 )
 def my_app(cfg: DictConfig) -> None:
     print(OmegaConf.to_yaml(cfg, resolve=True))

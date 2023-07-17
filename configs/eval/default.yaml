@@ -1,0 +1,3 @@
+defaults:
+  - nearest_neighbors: relative_pairwise_dists
+  - parameter_variations: tal_noisemaker

@@ -2,13 +2,12 @@
 
 defaults:
   - _self_
-  - data: nsynth 
+  #- data: nsynth 
   - hydra: default
   - logger: wandb
   - model: encodec48khz
-  - metrics: 
-    # - absolute_pairwise_dists # not really informative
-    - relative_pairwise_dists
+  - eval/nearest_neighbors: default # pass null to omit
+  - eval/parameter_variations: tal_noisemaker
   - paths: default 
 
   # experiment to perform (concret ones, not debug ones)
@@ -20,8 +19,12 @@ defaults:
 # seed for random number generators in pytorch, numpy and python.random
 seed: 667
 
-# similarity function to use for all metrics
-similarity: pairwise_cosine_similarity
+# this will be use to set the model`s input frame length 
+# as well as padding/truncating the audio data
+audio_length: 4.0
+
+# similarity function to use for all evaluation
+similarity: pairwise_manhattan_distance
 
 # task name, determines output directory path
 task_name: ${model.name}

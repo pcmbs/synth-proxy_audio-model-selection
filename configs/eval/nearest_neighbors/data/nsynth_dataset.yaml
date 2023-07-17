@@ -1,0 +1,17 @@
+nsynth_dataset:
+  root: ${paths.data_dir}
+  sources: 
+    - "acoustic"
+    - "electric"
+    - "synthetic"
+
+  # batch_size
+  batch_size: 32
+
+  # number of samples to use for evaluating embeddings
+  # OOM error if bigger than 3_072. might try with shorter samples
+  num_samples: 3_072
+
+  # whether to shuffle data
+  shuffle: true
+

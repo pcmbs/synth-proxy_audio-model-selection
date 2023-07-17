@@ -10,8 +10,8 @@ hydra:
   run:  
     dir: .
 
-data:
-  num_samples: 32
-  audio_length: 1.0
+# data:
+#   num_samples: 32
+#   audio_length: 1.0
 
 task_name: "debug"
