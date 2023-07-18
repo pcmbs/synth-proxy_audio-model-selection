@@ -1,16 +1,21 @@
 # pylint: disable=W1203,E1101
 # Adapted from: https://github.com/ashleve/lightning-hydra-template/blob/main/src/utils/utils.py
 import os
-
+from typing import Dict
 import torch
-import torch.nn as nn
+from torch.nn import Module
 from omegaconf import DictConfig
 from torchinfo import ModelStatistics
 import wandb
+from utils import reduce_fn
 
 
 def log_hyperparameters(
-    cfg: DictConfig, encoder: nn.Module, torchinfo_summary: ModelStatistics, device: str
+    cfg: DictConfig,
+    corrcoefs: Dict[str, float],
+    encoder: Module,
+    torchinfo_summary: ModelStatistics,
+    device: str,
 ) -> None:
     """
     log hparams to wandb.
@@ -18,36 +23,47 @@ def log_hyperparameters(
 
     hparams = {}
 
-    hparams["model"] = cfg.model.get("name")
-    hparams["sim_metric"] = cfg.get("similarity")
-    hparams["audio_length"] = cfg.data.get("audio_length")
-    hparams["dataset"] = cfg.data.get("root").split("/")[-1]
-    hparams["num_samples"] = cfg.data.get("num_samples")
-    # save number of model parameters
-    hparams["num_params"] = sum(p.numel() for p in encoder.parameters())
+    ##### General hparams
+    hparams["general/audio_length"] = cfg.get("audio_length")
+    hparams["general/seed"] = cfg.get("seed")
+    hparams["general/sim_metric"] = cfg.get("similarity_fn")
 
-    hparams["seed"] = cfg.get("seed")
+    ##### Evaluation related hparams
+    if cfg.eval.get("parameter_variations"):
+        sub_cfg = cfg.eval.parameter_variations
+        hparams["pv/_synth"] = sub_cfg.get("root").split("/")[-2]
+        for key, val in corrcoefs.items():
+            if key in ["mean", "median"]:
+                hparams[f"pv/_{key}"] = val
+            else:
+                hparams[f"pv/{key}"] = val
 
+    if cfg.eval.get("nearest_neighbors"):
+        sub_cfg = cfg.eval.nearest_neighbors.data
+        hparams["nearest_neighbors/dataset"] = sub_cfg.get("root").split("/")[-1]
+        hparams["nearest_neighbors/num_samples"] = sub_cfg.get("num_samples")
+
+    ##### Model related hparams
+    hparams["model/name"] = cfg.model.get("name")
+    hparams["model/num_params"] = sum(p.numel() for p in encoder.parameters())
+    hparams["model/total_mult_adds"] = torchinfo_summary.total_mult_adds
+    hparams["model/params_size_MB"] = ModelStatistics.to_megabytes(
+        torchinfo_summary.total_param_bytes
+    )
+    hparams["model/forbackward_size_MB"] = ModelStatistics.to_megabytes(
+        torchinfo_summary.total_output_bytes
+    )
     # get embedding size for one second of audio
     one_second_input = torch.rand(
         (1, encoder.channels, encoder.sample_rate), device=device
     )
-    hparams["repr_size_per_sec"] = list(
-        encoder(one_second_input)[0].shape
-    )  # TODO: account for reduction
+    hparams["model/emb_size_per_sec"] = list(
+        getattr(reduce_fn, cfg.reduce_fn)(encoder(one_second_input)[0]).shape
+    )
 
-    # add infos from torchinfos
-    hparams["total_mult_adds"] = torchinfo_summary.total_mult_adds
-    hparams["params_size_MB"] = ModelStatistics.to_megabytes(
-        torchinfo_summary.total_param_bytes
-    )
-    hparams["forbackward_size_MB"] = ModelStatistics.to_megabytes(
-        torchinfo_summary.total_output_bytes
-    )
-    # send hparams to wandb
+    ##### Save hparams and hydra config
     wandb.config.update(hparams)
-
-    # save hydra config in wandb
+    # hydra config is saved under <project_name>/Runs/<run_id>/Files/.hydra
     wandb.save(
         glob_str=os.path.join(cfg.paths.get("output_dir"), ".hydra", "*.yaml"),
         base_path=cfg.paths.get("output_dir"),

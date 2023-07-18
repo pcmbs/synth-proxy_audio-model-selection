@@ -4,66 +4,54 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Union, List, Dict, Tuple
 
-import hydra
 import numpy as np
 import torch
 import torch.nn as nn
-from dotenv import load_dotenv
-from omegaconf import DictConfig
+
 from torch.utils.data import DataLoader
-from torchmetrics.functional import pairwise_manhattan_distance, pearson_corrcoef
+from torchmetrics import functional as tm_functional
+from torchmetrics.functional import pearson_corrcoef
 
 # add parents directory to sys.path.
 sys.path.insert(1, str(Path(__file__).parent.parent))
 
 from data.tal_noisemaker.noisemaker_dataset import NoisemakerVariationsDataset
-from models.encodec.encoder import EncodecEncoder
 from utils.embeddings import compute_embeddings
-
-load_dotenv()  # take environment variables from .env for hydra configs
+from utils import reduce_fn as r_fn
 
 # logger for this file
 log = logging.getLogger(__name__)
 
-# set torch device
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-
-###### to move in hydra config
-PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT"))
-PATH_TO_CKPT = PROJECT_ROOT / "checkpoints"
-PATH_TO_DATASET = PROJECT_ROOT / "data/TAL-NoiseMaker/parameter_variations"
-AVAILABLE_VARIATIONS = [
-    "amp_attack",
-    "amp_decay",
-    "filter_cutoff",
-    "filter_decay",
-    "filter_resonance",
-    "frequency_mod",
-    "lfo_amount_on_filter",
-    "lfo_amount_on_volume",
-    "lfo_rate_on_filter",
-    "lfo_rate_on_volume",
-    "pitch_coarse",
-    "reverb",
-]
-
-###### functions definition
-
 
 def parameter_variations_eval(
-    variations: list[str], encoder: nn.Module, reduce_fn: str
-) -> dict[float]:
+    path_to_dataset: Union[Path, str],
+    variations: List[str],
+    encoder: nn.Module,
+    similarity: str,
+    reduce_fn: str,
+    device: str,
+) -> Dict[str, float]:
+    path_to_dataset = (
+        Path(path_to_dataset) if isinstance(path_to_dataset, str) else path_to_dataset
+    )
+
     corrcoeffs = {}
 
     for variation in variations:
-        log.info(f"Computing correlation coefficient for variation `{variation}`...")
-        corrcoeffs[variation] = _compute_corrcoeff_for_variation(
-            variation, encoder, reduce_fn
+        corrcoeff_from_first, corrcoeff_from_last = _compute_corrcoeff_for_variation(
+            path_to_dataset, variation, encoder, similarity, reduce_fn, device
+        )
+        corrcoeffs[variation] = (corrcoeff_from_first + corrcoeff_from_last) / 2
+        log.info(
+            f"Correlation coefficient for variation `{variation}`: \n"
+            f"    from first: {corrcoeff_from_first}\n"
+            f"    from last: {corrcoeff_from_last}\n"
+            f"    mean: {corrcoeffs[variation]}"
         )
 
-    # compute mean and median correlation coefficient
+    # compute the median correlation coefficient
     corrcoeffs["mean"] = np.mean(list(corrcoeffs.values()))
     corrcoeffs["median"] = np.median(list(corrcoeffs.values()))
 
@@ -71,15 +59,22 @@ def parameter_variations_eval(
 
 
 def _compute_corrcoeff_for_variation(
-    variation: str, encoder: nn.Module, reduce_fn: str
-) -> float:
+    path_to_dataset: Union[Path, str],
+    variation: str,
+    encoder: nn.Module,
+    similarity: str,
+    reduce_fn: str,
+    device: str,
+) -> Tuple[float, float]:
     dataset = NoisemakerVariationsDataset(
-        root=PATH_TO_DATASET, variation_type=variation
+        root=path_to_dataset, variation_type=variation
     )
 
     dataloader = DataLoader(dataset, batch_size=len(dataset), shuffle=False)
 
-    encoder.segment = dataset.audio_length
+    encoder.segment = (
+        dataset.audio_length
+    )  # to delete, will be set beforehand from config
 
     embeddings, rank = compute_embeddings(
         encoder=encoder,
@@ -89,15 +84,21 @@ def _compute_corrcoeff_for_variation(
         encoder_sample_rate=encoder.sample_rate,
         encoder_channels=encoder.channels,
         encoder_frame_length=encoder.segment,
-        device=DEVICE,
+        device=device,
+        pbar=False,
     )
 
     # flatten embeddings
-    embeddings = embeddings.flatten(start_dim=1)
+    embeddings = getattr(r_fn, reduce_fn)(embeddings)
 
-    dist_mat = pairwise_manhattan_distance(embeddings)
+    distance_fn = getattr(tm_functional, similarity)
+    dist_mat = distance_fn(embeddings)
 
-    indices = torch.argsort(dist_mat, dim=1)
+    indices = torch.argsort(
+        dist_mat,
+        dim=1,
+        descending=similarity == "pairwise_cosine_similarity",
+    )
 
     ranking_from_first = indices[0, 1:].float()
     ranking_from_last = indices[-1, 1:].float()
@@ -105,51 +106,47 @@ def _compute_corrcoeff_for_variation(
     target_from_first = torch.tensor(rank[1:]).float()
     target_from_last = target_from_first.flip(0) - 1
 
-    corrcoeff_from_first = pearson_corrcoef(ranking_from_first, target_from_first)
-    corrcoeff_from_last = pearson_corrcoef(ranking_from_last, target_from_last)
+    corrcoeff_from_first = pearson_corrcoef(
+        ranking_from_first, target_from_first
+    ).item()
+    corrcoeff_from_last = pearson_corrcoef(ranking_from_last, target_from_last).item()
 
-    avg_corrcoeff = (corrcoeff_from_first + corrcoeff_from_last) / 2
-
-    return avg_corrcoeff.item()
+    return corrcoeff_from_first, corrcoeff_from_last
 
 
 if __name__ == "__main__":
-    VARIATION_TYPE = "amp_attack"
+    # from models.encodec.encoder import EncodecEncoder
+    # # set torch device
+    # DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-    encoder = EncodecEncoder.encodec_model_48khz(
-        repository=PATH_TO_CKPT, segment=1.0, overlap=0.0
-    )
+    # ###### to move in hydra config
+    # PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT"))
+    # PATH_TO_CKPT = PROJECT_ROOT / "checkpoints"
+    # PATH_TO_DATASET = PROJECT_ROOT / "data/TAL-NoiseMaker/parameter_variations"
+    # AVAILABLE_VARIATIONS = [
+    #     "amp_attack",
+    #     "amp_decay",
+    #     "filter_cutoff",
+    #     "filter_decay",
+    #     "filter_resonance",
+    #     "frequency_mod",
+    #     "lfo_amount_on_filter",
+    #     "lfo_amount_on_volume",
+    #     "lfo_rate_on_filter",
+    #     "lfo_rate_on_volume",
+    #     "pitch_coarse",
+    #     "reverb",
+    # ]
 
-    corrcoeff = parameter_variations_eval(AVAILABLE_VARIATIONS, encoder, "mean")
+    # SIMILARITY = "pairwise_manhattan_distance"
 
+    # REDUC_FN = "flatten"
+
+    # encoder = EncodecEncoder.encodec_model_48khz(
+    #     repository=PATH_TO_CKPT, segment=1.0, overlap=0.0
+    # )
+
+    # corrcoeff = parameter_variations_eval(
+    #     PATH_TO_DATASET, AVAILABLE_VARIATIONS, encoder, SIMILARITY, REDUC_FN, DEVICE
+    # )
     print("breakpoint me!")
-# @hydra.main(
-#     version_base=None, config_path="../configs", config_name="evaluate_embeddings"
-# )
-# def main(cfg: DictConfig) -> Optional[float]:
-#     #################### preparation
-#     # set seed for random number generators in pytorch, numpy and python.random
-#     if cfg.get("seed"):
-#         seed_everything(cfg.seed, workers=True)
-
-#     # instantiate encoder
-#     log.info(f"Instantiating model <{cfg.model.encoder._target_}>")
-#     encoder: EncodecEncoder = hydra.utils.call(cfg.model.encoder)
-#     encoder.to(DEVICE)
-
-#     #################### get embeddings
-
-#     embeddings, indices_from_batch = get_embeddings(
-#         encoder=encoder,
-#         dataloader=nsynth_dataloader,
-#         num_samples=cfg.data.num_samples,
-#         data_sample_rate=nsynth_dataset.sample_rate,
-#         encoder_sample_rate=encoder.sample_rate,
-#         encoder_channels=encoder.channels,
-#         encoder_frame_length=encoder.segment,
-#         device=DEVICE,
-#     )
-
-
-# if __name__ == "__main__":
-#     main()  # pylint: disable=no-value-for-parameter

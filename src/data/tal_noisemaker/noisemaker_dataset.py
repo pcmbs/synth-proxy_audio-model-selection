@@ -2,15 +2,12 @@
 """
 Torch Dataset class for the TAL-Noisemaker parameter variations dataset
 """
-
-import json
 import logging
 from pathlib import Path
-from typing import Union, List, Optional
-
+from typing import Union
 import torch
 import torchaudio
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import Dataset
 
 # logger for this file
 log = logging.getLogger(__name__)
@@ -83,7 +80,7 @@ class NoisemakerVariationsDataset(Dataset):
         return len(self.file_stems)
 
     def __str__(self):
-        return f"NoisemakerVariationsDataset: {len(self)} samples for variation `{self.variation_type}`."
+        return f"NoisemakerVariationsDataset: {len(self)} samples found for variation `{self.variation_type}`."
 
     def __getitem__(self, index: int) -> tuple[torch.Tensor, int]:
         name = self.file_stems[index]

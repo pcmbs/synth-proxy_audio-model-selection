@@ -97,7 +97,7 @@ lfo_amount_on_filter = ParameterVariation(
     preset="LD Power Lead TAL",
     base_param_name="Lfo 2 Amount",
     param_idx=31,
-    interval=(0.0, 0.33),
+    interval=(0.33, 0.0),
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     # set `Envelop Amount` to 0.0
     # set `Lfo 2 Rate` to 0.45
@@ -130,7 +130,7 @@ lfo_rate_on_volume = ParameterVariation(
     preset="LD Mellow Chord TAL",
     base_param_name="Lfo 2 Rate",
     param_idx=29,
-    interval=(0.33, 0.66),
+    interval=(0.25, 0.66),
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     # set `Envelop Amount` to 0.0
     # set `Lfo 2 Amount` to 0.95
@@ -156,6 +156,7 @@ reverb = ParameterVariation(
     interval=(0.0, 1.0),
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     # set `Envelop Amount` to 0.0
+    # set `Lfo 1 Amount` to 0.5
     # set `Reverb Decay` to 0.5 and `Reverb Pre Delay` to 0
-    extra_params=((46, 1.0), (48, 1.0), (73, 0.0), (61, 0.5), (62, 0.0)),
+    extra_params=((46, 1.0), (48, 1.0), (73, 0.0), (30, 0.5), (61, 0.5), (62, 0.0)),
 )

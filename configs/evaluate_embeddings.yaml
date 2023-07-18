@@ -24,7 +24,12 @@ seed: 667
 audio_length: 4.0
 
 # similarity function to use for all evaluation
-similarity: pairwise_manhattan_distance
+similarity_fn: pairwise_manhattan_distance
+
+# function used to reduce the embedding dimensionality
+# available options: flatten, global_avg_pool_channel, global_avg_pool_time, 
+# global_max_pool_channel, global_max_pool_time
+reduce_fn: flatten
 
 # task name, determines output directory path
 task_name: ${model.name}

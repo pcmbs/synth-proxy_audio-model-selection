@@ -7,21 +7,19 @@ from typing import Optional
 
 import hydra
 import torch
+from torch.nn import Module
 from dotenv import load_dotenv
 from lightning import seed_everything
 from omegaconf import DictConfig
-from torch.utils.data import DataLoader
 from torchinfo import summary
-from torchmetrics import functional as tm_functional
+
 
 # add parents directory to sys.path.
 sys.path.insert(1, str(Path(__file__).parent.parent))
 
-from src.data.nsynth.nsynth_dataset import NSynthDataset
-from src.models.encodec.encoder import EncodecEncoder
-from src.utils.embeddings import compute_embeddings
-from src.utils.hparams import log_hyperparameters
-from src.utils.logger import LogAbsolutePairwiseDists, LogRelativePairwiseDists
+from evals import parameter_variations_eval
+from utils.hparams import log_hyperparameters
+
 
 load_dotenv()  # take environment variables from .env for hydra configs
 
@@ -41,15 +39,9 @@ def main(cfg: DictConfig) -> Optional[float]:
     if cfg.get("seed"):
         seed_everything(cfg.seed, workers=True)
 
-    # instantiate dataset and dataloader
-    nsynth_dataset = NSynthDataset(root=Path(cfg.data.root), sources=cfg.data.sources)
-    nsynth_dataloader = DataLoader(
-        nsynth_dataset, batch_size=cfg.data.batch_size, shuffle=cfg.data.shuffle
-    )
-
     # instantiate encoder
     log.info(f"Instantiating model <{cfg.model.encoder._target_}>")
-    encoder: EncodecEncoder = hydra.utils.call(cfg.model.encoder)
+    encoder: Module = hydra.utils.call(cfg.model.encoder)
     encoder.to(DEVICE)
 
     # instantiate wandb logger
@@ -62,75 +54,34 @@ def main(cfg: DictConfig) -> Optional[float]:
         encoder.encoder.model,
         input_size=(1, encoder.channels, int(encoder.segment_length)),
     )
-    #################### get embeddings
 
-    embeddings, indices_from_batch = compute_embeddings(
-        encoder=encoder,
-        dataloader=nsynth_dataloader,
-        num_samples=cfg.data.num_samples,
-        data_sample_rate=nsynth_dataset.sample_rate,
-        encoder_sample_rate=encoder.sample_rate,
-        encoder_channels=encoder.channels,
-        encoder_frame_length=encoder.segment,
-        device=DEVICE,
-    )
+    #################### embeddings evaluations
 
-    #################### Process embeddings
-    # flatten embeddings
-    embeddings = embeddings.view(cfg.data.num_samples, -1)
-    log.info(f"Embeddings shape: {embeddings[0].shape[0]}")
-    # TODO: try to process the embeddings as follow:
-    # - global pooling along the channel (and frequency?) dimensions to preserve temporal information.
-    # - check inter channels correlation take the mean per group of correlated channel or so
-    # - concat features from different layers (see papers in Zotero)
-    # - random projection
+    if cfg.eval.get("parameter_variations"):
+        log.info("Running parameter variations evaluation...")
 
-    #################### compute distance metrics
-    # cfg.similarity must be a valid torchmetrics.functional metric. The behavior has only been tested
-    # for "pairwise_cosine_similarity", "pairwise_euclidean_distance", and "pairwise_manhattan_distance".
-    distance_fn = getattr(tm_functional, cfg.similarity)
-    log.info(f"Computing distance matrix using {cfg.similarity}...")
-    distance_matrix = distance_fn(embeddings)
-
-    #################### compute and log evaluation metrics
-    if logger and cfg.metrics.get("absolute_pairwise_dists"):
-        log.info("Computing and logging absolute pairwise distances based metrics...")
-
-        abs_pairwise_dists_logger = LogAbsolutePairwiseDists(
-            logger=logger,
-            distance_matrix=distance_matrix,
-            indices_from_batch=indices_from_batch,
-            dataset=nsynth_dataset,
-            descending=bool(cfg.similarity == "pairwise_cosine_similarity"),
+        corrcoefs = parameter_variations_eval(
+            path_to_dataset=cfg.eval.parameter_variations.root,
+            variations=cfg.eval.parameter_variations.available_variations,
+            encoder=encoder,
+            similarity=cfg.similarity_fn,
+            reduce_fn=cfg.reduce_fn,
+            device=DEVICE,
         )
 
-        abs_pairwise_dists_logger.log_n_pairs(
-            n=cfg.metrics.absolute_pairwise_dists.num_pairs,
-            mode=cfg.metrics.absolute_pairwise_dists.mode,
-        )
-
-    if logger and cfg.metrics.get("relative_pairwise_dists"):
-        log.info("Computing and logging relative pairwise distances based metrics")
-        sub_cfg = cfg.metrics.relative_pairwise_dists
-
-        rel_pairwise_dists_logger = LogRelativePairwiseDists(
-            logger=logger,
-            distance_matrix=distance_matrix,
-            indices_from_batch=indices_from_batch,
-            num_samples=sub_cfg.num_samples,
-            dataset=nsynth_dataset,
-            descending=bool(cfg.similarity == "pairwise_cosine_similarity"),
-        )
-        rel_pairwise_dists_logger.log_n_neighbors(
-            sub_cfg.n_neighbors, mode=sub_cfg.mode
-        )
+    if cfg.eval.get("nearest_neighbors"):
+        log.info("Running nearest neighbors evaluation...")
 
     #################### Logging hparams
 
     if logger:
         log.info("Logging hyperparameters...")
         log_hyperparameters(
-            cfg=cfg, encoder=encoder, torchinfo_summary=torchinfo_summary, device=DEVICE
+            cfg=cfg,
+            corrcoefs=corrcoefs,
+            encoder=encoder,
+            torchinfo_summary=torchinfo_summary,
+            device=DEVICE,
         )
 
 
@@ -139,5 +90,6 @@ if __name__ == "__main__":
     gettrace = getattr(sys, "gettrace", None)
     if gettrace():
         # sys.argv = ["audio_model_analysis.py", "debug=default"]
-        sys.argv = ["audio_model_analysis.py", "debug=with_logger"]
+        # sys.argv = ["audio_model_analysis.py", "debug=with_logger"]
+        sys.argv = ["audio_model_analysis.py"]
     main()  # pylint: disable=no-value-for-parameter

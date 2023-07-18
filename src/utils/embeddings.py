@@ -16,6 +16,7 @@ def compute_embeddings(
     encoder_channels: int,
     encoder_frame_length: float,
     device: str,
+    pbar: bool = True,
 ) -> tuple[torch.Tensor, list[int]]:
     """
     Compute embeddings for a given encoder and dataloader.
@@ -30,6 +31,7 @@ def compute_embeddings(
         encoder_channels (int): The number of input channels for the encoder.
         encoder_frame_length (float): The desired frame length for the encoder.
         device (str): The device to perform computations on.
+        pbar (bool): Whether to display a progress bar.
 
     Returns:
         tuple[torch.Tensor, list[int]]: A tuple containing the computed embeddings
@@ -43,13 +45,18 @@ def compute_embeddings(
         num_samples // dataloader.batch_size if num_samples > -1 else len(dataloader)
     )
 
-    with torch.no_grad():
-        for i, batch in tqdm(
+    if pbar:
+        pbar = tqdm(
             enumerate(dataloader),
             dynamic_ncols=True,
             desc="Computing embeddings",
             total=num_batches,
-        ):
+        )
+    else:
+        pbar = enumerate(dataloader)
+
+    with torch.no_grad():
+        for i, batch in pbar:
             if i >= num_batches:
                 break
 
