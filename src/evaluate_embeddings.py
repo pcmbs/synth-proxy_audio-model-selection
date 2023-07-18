@@ -1,8 +1,8 @@
 # pylint: disable=W1203,C0413,W0212
 
 import logging
-import sys
-from pathlib import Path
+
+# import sys
 from typing import Optional
 
 import hydra
@@ -12,10 +12,6 @@ from dotenv import load_dotenv
 from lightning import seed_everything
 from omegaconf import DictConfig
 from torchinfo import summary
-
-
-# add parents directory to sys.path.
-sys.path.insert(1, str(Path(__file__).parent.parent))
 
 from evals import parameter_variations_eval
 from utils.hparams import log_hyperparameters
@@ -66,7 +62,6 @@ def main(cfg: DictConfig) -> Optional[float]:
             encoder=encoder,
             similarity=cfg.similarity_fn,
             reduce_fn=cfg.reduce_fn,
-            device=DEVICE,
         )
 
     if cfg.eval.get("nearest_neighbors"):
@@ -87,9 +82,9 @@ def main(cfg: DictConfig) -> Optional[float]:
 
 if __name__ == "__main__":
     # check if program in debug mode, and set the corresponding config if so
-    gettrace = getattr(sys, "gettrace", None)
-    if gettrace():
-        # sys.argv = ["audio_model_analysis.py", "debug=default"]
-        # sys.argv = ["audio_model_analysis.py", "debug=with_logger"]
-        sys.argv = ["audio_model_analysis.py"]
+    # gettrace = getattr(sys, "gettrace", None)
+    # if gettrace():
+    #     # sys.argv = ["audio_model_analysis.py", "debug=default"]
+    #     # sys.argv = ["audio_model_analysis.py", "debug=with_logger"]
+    #     sys.argv = ["audio_model_analysis.py"]
     main()  # pylint: disable=no-value-for-parameter

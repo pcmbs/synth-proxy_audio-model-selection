@@ -1,8 +1,6 @@
 # pylint: disable=E1101,C0413,W1203
 
 import logging
-import os
-import sys
 from pathlib import Path
 from typing import Union, List, Dict, Tuple
 
@@ -14,8 +12,11 @@ from torch.utils.data import DataLoader
 from torchmetrics import functional as tm_functional
 from torchmetrics.functional import pearson_corrcoef
 
-# add parents directory to sys.path.
-sys.path.insert(1, str(Path(__file__).parent.parent))
+# add parents directory to sys.path if run as as main
+if __name__ == "__main__":
+    import sys
+
+    sys.path.insert(1, str(Path(__file__).parents[1]))
 
 from data.tal_noisemaker.noisemaker_dataset import NoisemakerVariationsDataset
 from utils.embeddings import compute_embeddings
@@ -31,7 +32,6 @@ def parameter_variations_eval(
     encoder: nn.Module,
     similarity: str,
     reduce_fn: str,
-    device: str,
 ) -> Dict[str, float]:
     path_to_dataset = (
         Path(path_to_dataset) if isinstance(path_to_dataset, str) else path_to_dataset
@@ -41,7 +41,7 @@ def parameter_variations_eval(
 
     for variation in variations:
         corrcoeff_from_first, corrcoeff_from_last = _compute_corrcoeff_for_variation(
-            path_to_dataset, variation, encoder, similarity, reduce_fn, device
+            path_to_dataset, variation, encoder, similarity, reduce_fn
         )
         corrcoeffs[variation] = (corrcoeff_from_first + corrcoeff_from_last) / 2
         log.info(
@@ -64,7 +64,6 @@ def _compute_corrcoeff_for_variation(
     encoder: nn.Module,
     similarity: str,
     reduce_fn: str,
-    device: str,
 ) -> Tuple[float, float]:
     dataset = NoisemakerVariationsDataset(
         root=path_to_dataset, variation_type=variation
@@ -84,7 +83,6 @@ def _compute_corrcoeff_for_variation(
         encoder_sample_rate=encoder.sample_rate,
         encoder_channels=encoder.channels,
         encoder_frame_length=encoder.segment,
-        device=device,
         pbar=False,
     )
 
@@ -115,7 +113,10 @@ def _compute_corrcoeff_for_variation(
 
 
 if __name__ == "__main__":
+    # import sys
+    # import os
     # from models.encodec.encoder import EncodecEncoder
+
     # # set torch device
     # DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 

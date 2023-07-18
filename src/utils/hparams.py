@@ -9,13 +9,15 @@ from torchinfo import ModelStatistics
 import wandb
 from utils import reduce_fn
 
+# set torch device
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
 
 def log_hyperparameters(
     cfg: DictConfig,
     corrcoefs: Dict[str, float],
     encoder: Module,
     torchinfo_summary: ModelStatistics,
-    device: str,
 ) -> None:
     """
     log hparams to wandb.
@@ -55,7 +57,7 @@ def log_hyperparameters(
     )
     # get embedding size for one second of audio
     one_second_input = torch.rand(
-        (1, encoder.channels, encoder.sample_rate), device=device
+        (1, encoder.channels, encoder.sample_rate), device=DEVICE
     )
     hparams["model/emb_size_per_sec"] = list(
         getattr(reduce_fn, cfg.reduce_fn)(encoder(one_second_input)[0]).shape

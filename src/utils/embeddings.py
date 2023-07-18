@@ -6,6 +6,9 @@ from torch.utils.data import DataLoader
 
 from .audio import convert_audio
 
+# set torch device
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
 
 def compute_embeddings(
     encoder: nn.Module,
@@ -15,7 +18,6 @@ def compute_embeddings(
     encoder_sample_rate: int,
     encoder_channels: int,
     encoder_frame_length: float,
-    device: str,
     pbar: bool = True,
 ) -> tuple[torch.Tensor, list[int]]:
     """
@@ -30,7 +32,6 @@ def compute_embeddings(
         encoder_sample_rate (int): The desired sample rate for the encoder.
         encoder_channels (int): The number of input channels for the encoder.
         encoder_frame_length (float): The desired frame length for the encoder.
-        device (str): The device to perform computations on.
         pbar (bool): Whether to display a progress bar.
 
     Returns:
@@ -68,7 +69,7 @@ def compute_embeddings(
                 target_channels=encoder_channels,
                 target_duration=encoder_frame_length,
             )
-            audio = audio.to(device)
+            audio = audio.to(DEVICE)
 
             batch_embeddings = encoder(audio)[0].detach()
             embeddings.append(batch_embeddings)

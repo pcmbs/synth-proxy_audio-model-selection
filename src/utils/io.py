@@ -1,5 +1,4 @@
 """IO utils"""
-
 from pathlib import Path
 
 
