@@ -65,7 +65,10 @@ def main(cfg: DictConfig) -> Optional[float]:
         )
 
     if cfg.eval.get("nearest_neighbors"):
-        log.info("Running nearest neighbors evaluation...")
+        if not logger:
+            log.info("nearest neighbors evaluation requires a logger, skipping...")
+        else:
+            log.info("Running nearest neighbors evaluation...")
 
     #################### Logging hparams
 
@@ -76,7 +79,6 @@ def main(cfg: DictConfig) -> Optional[float]:
             corrcoefs=corrcoefs,
             encoder=encoder,
             torchinfo_summary=torchinfo_summary,
-            device=DEVICE,
         )
 
 
