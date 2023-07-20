@@ -3,10 +3,10 @@ relative_pairwise_dists:
   # and log them in a wandb.Table
 
   # number of samples to compute the nearest neighbors for
-  num_samples: 10
+  num_samples: 5
   
   # Number of neighbors to log.
-  n_neighbors: 5
+  num_neighbors: 5
   
   # modes for selecting the neighbors.
   mode: 

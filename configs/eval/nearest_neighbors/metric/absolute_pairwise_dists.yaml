@@ -1,3 +1,4 @@
+# to avoid, not really useful. Might delete in the future.
 absolute_pairwise_dists: 
   # compute and sort pairwise distances and log n of them in a wandb.Table
   # one can choose to log the n most similar pairs, n most dissimilar pairs,

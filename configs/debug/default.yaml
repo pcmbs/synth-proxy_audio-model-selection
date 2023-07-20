@@ -2,18 +2,26 @@
 
 defaults:  
   - _self_  
-  - override /hydra/hydra_logging@_group_: none 
+  - override /logger@_group_: null
+  # - override /hydra/hydra_logging@_group_: none 
   - override /hydra/job_logging@_group_: none 
   
+task_name: "debug"
+
 hydra:  
   output_subdir: null  
   run:  
     dir: .
 
-logger: null
+# logger: null
 
-# data:
-#   num_samples: 256
-#   audio_length: 1.0
+audio_length: 1.0
 
-task_name: "debug"
+eval:
+  nearest_neighbors:
+    data:
+      num_samples: 32
+    metric:
+      relative_pairwise_dists:
+        num_samples: 2
+        num_neighbors: 5

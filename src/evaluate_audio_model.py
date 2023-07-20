@@ -70,7 +70,7 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
         input_size=(1, encoder.channels, int(encoder.segment_length)),
     )
 
-    #################### embeddings evaluations
+    #################### evaluations
 
     if cfg.eval.get("parameter_variations"):
         log.info("Running parameter variations evaluation...")
@@ -111,11 +111,11 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
 if __name__ == "__main__":
     import sys
 
-    sys.argv = ["evaluate_audio_model.py", "debug=with_logger"]
+    # sys.argv = ["evaluate_audio_model.py", "debug=with_logger"]
     # check if program in debug mode, and set the corresponding config if so
     gettrace = getattr(sys, "gettrace", None)
     if gettrace():
         # sys.argv = ["evaluate_audio_model.py", "debug=default"]
-        sys.argv = ["evaluate_audio_model.py", "debug=with_logger"]
-    #     sys.argv = ["evaluate_audio_model.py"]
+        # sys.argv = ["evaluate_audio_model.py", "debug=with_logger"]
+        sys.argv = ["evaluate_audio_model.py"]
     evaluate_audio_model()  # pylint: disable=no-value-for-parameter

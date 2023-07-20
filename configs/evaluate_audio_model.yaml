@@ -6,7 +6,7 @@ defaults:
   - hydra: default
   - logger: wandb
   - model: encodec48khz
-  - eval/nearest_neighbors: default # pass null to omit
+  - eval/nearest_neighbors: null # default # pass null to omit
   - eval/parameter_variations: tal_noisemaker
   - paths: default 
 
@@ -23,8 +23,9 @@ seed: 667
 # as well as padding/truncating the audio data
 audio_length: 4.0
 
-# similarity function to use for all evaluation
-similarity_fn: pairwise_manhattan_distance
+# function used to calculate the distance matrix of the sound embeddings 
+# (must be the name of a torchmetrics.functional function)
+distance_fn: pairwise_manhattan_distance
 
 # function used to reduce the embedding dimensionality
 # available options: flatten, global_avg_pool_channel, global_avg_pool_time, 

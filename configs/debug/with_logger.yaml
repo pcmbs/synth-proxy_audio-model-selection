@@ -1,17 +1,16 @@
 # @package _global_
 
 defaults:  
-  - _self_  
-  - override /hydra/hydra_logging@_group_: none 
-  - override /hydra/job_logging@_group_: none 
+  - default
+  - override /logger@_group_: wandb
+  - override /hydra/hydra_logging@_group_: colorlog
+#   - override /hydra/job_logging@_group_: none 
   
-hydra:  
-  output_subdir: null  
-  run:  
-    dir: .
+# task_name: "debug"
 
-# data:
-#   num_samples: 32
-#   audio_length: 1.0
 
-task_name: "debug"
+# hydra:  
+#   output_subdir: null  
+#   run:  
+#     dir: .
+
