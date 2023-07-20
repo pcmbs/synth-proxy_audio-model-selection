@@ -30,6 +30,9 @@ from utils import reduce_fn as r_fn
 # logger for this file
 log = logging.getLogger(__name__)
 
+# set torch device
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
 
 def parameter_variations_eval(
     path_to_dataset: Union[Path, str],
@@ -121,7 +124,7 @@ def _compute_corrcoeff_for_variation(
         descending=distance_fn == "pairwise_cosine_similarity",
     )
 
-    ranking_target = torch.tensor(rank[1:]).float()
+    ranking_target = torch.tensor(rank[1:]).float().to(DEVICE)
 
     corrcoeff_up = pearson_corrcoef(
         preds=indices[0, 1:].float(), target=ranking_target
