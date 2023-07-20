@@ -54,20 +54,20 @@ def nearest_neighbor(
     """
     Retrieve the nearest neighbors of `num_samples` randomly chosen samples from a distance matrix.
 
-    Args:
-        dist_mat (torch.Tensor): A 2D tensor representing the distance matrix.
-        num_samples (int): The number of samples to compute nearest neighbors for. Compute for all if None
-        (however it might be preferable to directly use torch.argosort for that). (Default: None)
-        descending (bool, optional): A flag indicating to sort in descending order. (Default: False).
+    Args
+    - `dist_mat` (torch.Tensor): A 2D tensor representing the distance matrix.
+    - `num_samples` (int): The number of samples to compute nearest neighbors for. Compute for all if None
+    (however it might be preferable to directly use torch.argosort for that). (Default: None)
+    - `descending` (bool, optional): A flag indicating to sort in descending order. (Default: False).
 
-    Raises:
-        ValueError: If the distance matrix is not 2D or symmetric.
+    Raises
+    ValueError: If the distance matrix is not 2D or symmetric.
 
-    Returns:
-        torch.Tensor: A 3D tensor of indices of the pairwise distances sorted for
-        each randomly chosen samples. The tensor is of shape (num_samples, dist_mat.shape[0]-1, 2),
-        where the last dimension's first and second indices are the row and column indices
-        of elements in the distance matrix in the sorted order.
+    Returns
+    torch.Tensor: A 3D tensor of indices of the pairwise distances sorted for
+    each randomly chosen samples. The tensor is of shape (num_samples, dist_mat.shape[0]-1, 2),
+    where the last dimension's first and second indices are the row and column indices
+    of elements in the distance matrix in the sorted order.
 
     """
     _check_symmetry(distance_matrix)
@@ -105,7 +105,7 @@ def nearest_neighbor(
 
 
 def _check_symmetry(dist_mat: torch.Tensor) -> None:
-    if dist_mat.dim() != 2 or dist_mat.shape[0] != dist_mat.shape[1]:
+    if (dist_mat.dim() != 2 or dist_mat.shape[0] != dist_mat.shape[1]):
         raise ValueError("The given distance matrix must be 2D and square.")
     if not torch.allclose(dist_mat.transpose(0, 1), dist_mat):
         raise ValueError("The given distance matrix must be symmetric.")

@@ -49,6 +49,7 @@ class NSynthDataset(Dataset):
 
         assert self.subset in ["valid", "test", "train"]
 
+        root = Path(root) if isinstance(root, str) else root
         self.root = root / f"nsynth-{subset}"
         if not self.root.is_dir():
             raise ValueError(
@@ -92,7 +93,7 @@ class NSynthDataset(Dataset):
 
     def __len__(self):
         return len(self.attrs)
-    
+
     def __str__(self):
         return f"NSynthDataset: {len(self):>7} samples in subset {self.subset}"
 

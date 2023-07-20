@@ -1,18 +1,20 @@
 # pylint: disable=E1101:no-member,W1203
+"""
+Not used module. Might be deleted soon.
+see evals/nearest_neighbors_eval.py instead
+"""
 import logging
-import typing as tp
-from typing import Sequence
+from typing import Any, Sequence
 
 import torch
 import wandb
 from torch.utils.data import Dataset
-from .distances import global_argsort, nearest_neighbor
+from utils.distances import global_argsort, nearest_neighbor
 
 # logger for this file
 log = logging.getLogger(__name__)
 
-# WandbRunner = wandb.watch.sdk.wandb_run.Run
-WandbRunner = tp.Any
+WandbRunner = Any
 
 
 class LogAbsolutePairwiseDists:
@@ -145,7 +147,7 @@ class LogRelativePairwiseDists:
     ) -> None:
         """
         Args:
-            logger (WandbRunner): The wandb Run object used for logging
+            logger (WandbRunner): The wandb Run object used for logging.
             distance_matrix (torch.Tensor): The distance matrix from which to compute the pairwise distances.
             indices_from_batch (list): The indices as returned by the dataloader
             used to retrieve the original samples from the dataset

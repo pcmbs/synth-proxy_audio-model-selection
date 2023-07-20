@@ -1,1 +1,2 @@
 from .parameter_variations_eval import parameter_variations_eval
+from .nearest_neighbors_eval import nearest_neighbors_eval

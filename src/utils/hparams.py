@@ -1,7 +1,7 @@
 # pylint: disable=W1203,E1101
 # Adapted from: https://github.com/ashleve/lightning-hydra-template/blob/main/src/utils/utils.py
 import os
-from typing import Dict
+from typing import Dict, Optional
 import torch
 from torch.nn import Module
 from omegaconf import DictConfig
@@ -15,7 +15,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 def log_hyperparameters(
     cfg: DictConfig,
-    corrcoefs: Dict[str, float],
+    corrcoefs: Optional[Dict[str, float]],
     encoder: Module,
     torchinfo_summary: ModelStatistics,
 ) -> None:
@@ -28,7 +28,7 @@ def log_hyperparameters(
     ##### General hparams
     hparams["general/audio_length"] = cfg.get("audio_length")
     hparams["general/seed"] = cfg.get("seed")
-    hparams["general/sim_metric"] = cfg.get("similarity_fn")
+    hparams["general/distance_fn"] = cfg.get("distance_fn")
 
     ##### Evaluation related hparams
     if cfg.eval.get("parameter_variations"):
