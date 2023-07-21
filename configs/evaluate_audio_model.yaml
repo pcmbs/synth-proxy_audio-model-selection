@@ -6,7 +6,7 @@ defaults:
   - hydra: default
   - logger: wandb
   - model: encodec48khz
-  - eval/nearest_neighbors: null # default # pass null to omit
+  - eval/nearest_neighbors: default # pass null to omit
   - eval/parameter_variations: tal_noisemaker
   - paths: default 
 
