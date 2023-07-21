@@ -14,6 +14,7 @@ import torch
 from torch import nn
 
 from torch.utils.data import DataLoader
+import torchmetrics.functional as tm_functional
 from torchmetrics.functional import pearson_corrcoef
 
 from utils.distances import iterative_distance_matrix
@@ -117,7 +118,7 @@ def _compute_corrcoeff_for_variation(
 
     embeddings = getattr(r_fn, reduce_fn)(embeddings)
 
-    distance_matrix = iterative_distance_matrix(embeddings, distance_fn)
+    distance_matrix = getattr(tm_functional, distance_fn)(embeddings)
 
     indices = torch.argsort(
         distance_matrix,

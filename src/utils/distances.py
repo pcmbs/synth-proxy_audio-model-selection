@@ -105,7 +105,7 @@ def nearest_neighbors(
     return sorted_indices
 
 
-def iterative_distance_matrix(data: torch.Tensor, distance_fn: str, batch_size=512):
+def iterative_distance_matrix(data: torch.Tensor, distance_fn: str, batch_size=64):
     """
     Iteratively computes a distance matrix based on sub-distance matrices using a given distance function.
 
@@ -113,8 +113,7 @@ def iterative_distance_matrix(data: torch.Tensor, distance_fn: str, batch_size=5
     - `data` (torch.Tensor): Input data of shape (num_samples, embedding_size).
     - `distance_fn` (str): The distance used for computing the distance matrix.
     Must be a torchmetrics.functional function.
-    - `batch_size` (int): Batch size for sub-distance matrix computation.
-    A tensor of shape (512,512) takes approximately 2GiB. (Default: 512)
+    - `batch_size` (int): Batch size for sub-distance matrix computation. (Default: 64)
 
     Returns
         torch.Tensor: Distance matrix of shape (num_samples, num_samples).
