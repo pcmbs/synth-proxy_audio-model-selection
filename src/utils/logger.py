@@ -159,7 +159,7 @@ class LogRelativePairwiseDists:
         self.logger = logger
 
         self.distance_matrix = distance_matrix
-        self.sorted_indices = nearest_neighbor(
+        self.sorted_indices = nearest_neighbors(
             self.distance_matrix,
             num_samples=num_samples,
             descending=descending,
