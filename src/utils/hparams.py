@@ -29,6 +29,7 @@ def log_hyperparameters(
     hparams["general/audio_length"] = cfg.get("audio_length")
     hparams["general/seed"] = cfg.get("seed")
     hparams["general/distance_fn"] = cfg.get("distance_fn")
+    hparams["general/reduce_fn"] = cfg.get("reduce_fn")
 
     ##### Evaluation related hparams
     if cfg.eval.get("parameter_variations"):
