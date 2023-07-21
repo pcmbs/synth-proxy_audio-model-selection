@@ -9,7 +9,7 @@ from typing import Any, Sequence
 import torch
 import wandb
 from torch.utils.data import Dataset
-from utils.distances import global_argsort, nearest_neighbor
+from utils.distances import global_argsort, nearest_neighbors
 
 # logger for this file
 log = logging.getLogger(__name__)

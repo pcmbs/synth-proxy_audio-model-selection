@@ -11,7 +11,6 @@ import torch
 from omegaconf import DictConfig
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
-from torchmetrics import functional as tm_functional
 
 import wandb
 from data.nsynth.nsynth_dataset import NSynthDataset
