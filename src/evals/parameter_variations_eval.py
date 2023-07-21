@@ -14,8 +14,9 @@ import torch
 from torch import nn
 
 from torch.utils.data import DataLoader
-from torchmetrics import functional as tm_functional
 from torchmetrics.functional import pearson_corrcoef
+
+from utils.distances import iterative_distance_matrix
 
 # add parents directory to sys.path if run as as main (for debugging purposes)
 if __name__ == "__main__":
@@ -116,13 +117,7 @@ def _compute_corrcoeff_for_variation(
 
     embeddings = getattr(r_fn, reduce_fn)(embeddings)
 
-    if distance_fn == "pairwise_manhattan_distance":
-        # torchmetrics.functional.pairwise_manhattan_distance blows up GPU VRAM
-        distance_matrix = tm_functional.pairwise_minkowski_distance(
-            embeddings, exponent=1
-        )
-    else:
-        distance_matrix = getattr(tm_functional, distance_fn)(embeddings)
+    distance_matrix = iterative_distance_matrix(embeddings, distance_fn)
 
     indices = torch.argsort(
         distance_matrix,

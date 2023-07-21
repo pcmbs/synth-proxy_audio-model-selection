@@ -1,5 +1,6 @@
 # pylint: disable=E1101:no-member
 import torch
+import torchmetrics.functional as tm_functional
 
 
 def global_argsort(
@@ -48,7 +49,7 @@ def global_argsort(
     return nonzero_indices[sorted_indices]
 
 
-def nearest_neighbor(
+def nearest_neighbors(
     distance_matrix: torch.Tensor, num_samples: int = None, descending: bool = False
 ) -> torch.Tensor:
     """
@@ -104,8 +105,45 @@ def nearest_neighbor(
     return sorted_indices
 
 
+def iterative_distance_matrix(data: torch.Tensor, distance_fn: str, batch_size=512):
+    """
+    Iteratively computes a distance matrix based on sub-distance matrices using a given distance function.
+
+    Args
+    - `data` (torch.Tensor): Input data of shape (num_samples, embedding_size).
+    - `distance_fn` (str): The distance used for computing the distance matrix.
+    Must be a torchmetrics.functional function.
+    - `batch_size` (int): Batch size for sub-distance matrix computation.
+    A tensor of shape (512,512) takes approximately 2GiB. (Default: 512)
+
+    Returns
+        torch.Tensor: Distance matrix of shape (num_samples, num_samples).
+    """
+    num_samples = data.shape[0]
+    device = data.device
+    pairwise_distance_fn = getattr(tm_functional, distance_fn)
+
+    dist_mat = torch.zeros((num_samples, num_samples), device=device)
+
+    # Iterate over data in batches
+    for i in range(0, num_samples, batch_size):
+        for j in range(i, num_samples, batch_size):
+            data_batch_i = data[i : i + batch_size]
+            data_batch_j = data[j : j + batch_size]
+
+            # Compute pairwise distance for the current batch and update the distance matrix
+            dist_mat[i : i + batch_size, j : j + batch_size] = pairwise_distance_fn(
+                data_batch_i, data_batch_j
+            )
+            if i != j:
+                dist_mat[j : j + batch_size, i : i + batch_size] = dist_mat[
+                    i : i + batch_size, j : j + batch_size
+                ].T
+    return dist_mat
+
+
 def _check_symmetry(dist_mat: torch.Tensor) -> None:
-    if (dist_mat.dim() != 2 or dist_mat.shape[0] != dist_mat.shape[1]):
+    if dist_mat.dim() != 2 or dist_mat.shape[0] != dist_mat.shape[1]:
         raise ValueError("The given distance matrix must be 2D and square.")
     if not torch.allclose(dist_mat.transpose(0, 1), dist_mat):
         raise ValueError("The given distance matrix must be symmetric.")

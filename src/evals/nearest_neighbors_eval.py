@@ -16,7 +16,7 @@ from torchmetrics import functional as tm_functional
 import wandb
 from data.nsynth.nsynth_dataset import NSynthDataset
 from utils import reduce_fn as r_fn
-from utils.distances import nearest_neighbor
+from utils.distances import nearest_neighbors, iterative_distance_matrix
 from utils.embeddings import compute_embeddings
 
 # logger for this file
@@ -70,15 +70,9 @@ def nearest_neighbors_eval(
 
     embeddings = getattr(r_fn, reduce_fn)(embeddings)
 
-    if distance_fn == "pairwise_manhattan_distance":
-        # torchmetrics.functional.pairwise_manhattan_distance blows up GPU VRAM
-        distance_matrix = tm_functional.pairwise_minkowski_distance(
-            embeddings, exponent=1
-        )
-    else:
-        distance_matrix = getattr(tm_functional, distance_fn)(embeddings)
+    distance_matrix = iterative_distance_matrix(embeddings, distance_fn)
 
-    sorted_indices = nearest_neighbor(
+    sorted_indices = nearest_neighbors(
         distance_matrix,
         num_samples=cfg.metric.relative_pairwise_dists.num_samples,
         descending=distance_fn == "pairwise_cosine_similarity",
