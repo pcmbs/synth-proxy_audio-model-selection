@@ -37,11 +37,11 @@ def log_hyperparameters(
         hparams["pv/_synth"] = sub_cfg.get("root").split("/")[-2]
         for key, val in corrcoefs.items():
             if key in ["mean", "median"]:
-                hparams[f"pv/_{key}"] = val
-                # wandb.run.summary[f"pv/_{key}"] = val
+                # hparams[f"pv/_{key}"] = val
+                wandb.run.summary[f"pv/_{key}"] = val
             else:
-                hparams[f"pv/{key}"] = val
-                # wandb.run.summary[f"pv/{key}"] = val
+                # hparams[f"pv/{key}"] = val
+                wandb.run.summary[f"pv/{key}"] = val
 
     if cfg.eval.get("nearest_neighbors"):
         sub_cfg = cfg.eval.nearest_neighbors.data
@@ -62,7 +62,10 @@ def log_hyperparameters(
     one_second_input = torch.rand(
         (1, encoder.channels, encoder.sample_rate), device=DEVICE
     )
-    hparams["model/emb_size_per_sec"] = getattr(reduce_fn, cfg.reduce_fn)(
+    # hparams["model/emb_size_per_sec"] = getattr(reduce_fn, cfg.reduce_fn)(
+    #     encoder(one_second_input)[0]
+    # ).shape[-1]
+    wandb.run.summary["model/emb_size_per_sec"] = getattr(reduce_fn, cfg.reduce_fn)(
         encoder(one_second_input)[0]
     ).shape[-1]
     # wandb.run.summary["model/emb_size_per_sec"] = hparams["model/emb_size_per_sec"]
