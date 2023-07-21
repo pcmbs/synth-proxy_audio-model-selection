@@ -70,7 +70,13 @@ def nearest_neighbors_eval(
 
     embeddings = getattr(r_fn, reduce_fn)(embeddings)
 
-    distance_matrix = getattr(tm_functional, distance_fn)(embeddings)
+    if distance_fn == "pairwise_manhattan_distance":
+        # torchmetrics.functional.pairwise_manhattan_distance blows up GPU VRAM
+        distance_matrix = tm_functional.pairwise_minkowski_distance(
+            embeddings, exponent=1
+        )
+    else:
+        distance_matrix = getattr(tm_functional, distance_fn)(embeddings)
 
     sorted_indices = nearest_neighbor(
         distance_matrix,
