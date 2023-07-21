@@ -77,11 +77,11 @@ def global_max_pool_time(embeddings: torch.Tensor) -> torch.Tensor:
 
 
 if __name__ == "__main__":
-    # embeddings = torch.rand((10, 128, 500))
+    embeddings = torch.rand((10, 128, 500))
 
-    # print("flatten", flatten(embeddings).shape)
-    # print("global_avg_pool_channel", global_avg_pool_channel(embeddings).shape)
-    # print("global_avg_pool_time", global_avg_pool_time(embeddings).shape)
-    # print("global_max_pool_channel", global_max_pool_channel(embeddings).shape)
-    # print("global_max_pool_time", global_max_pool_time(embeddings).shape)
-    print("breakpoint me!")
+    print("original:", embeddings.shape)
+    print("flatten:", flatten(embeddings).shape)
+    print("global_avg_pool_channel:", global_avg_pool_channel(embeddings).shape)
+    print("global_avg_pool_time:", global_avg_pool_time(embeddings).shape)
+    print("global_max_pool_channel:", global_max_pool_channel(embeddings).shape)
+    print("global_max_pool_time:", global_max_pool_time(embeddings).shape)

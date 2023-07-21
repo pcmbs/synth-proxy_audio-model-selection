@@ -27,6 +27,8 @@ load_dotenv()
 # https://tal-software.com//downloads/presets/TAL-NoiseMaker%20vst3.zip
 
 ####################### Setup
+EXPORT_PRESETS = False
+
 PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT"))
 PATH_TO_TAL_FOLDER = PROJECT_ROOT / "data" / "TAL-NoiseMaker"
 PATH_TO_PLUGIN = PATH_TO_TAL_FOLDER / "TAL-NoiseMaker.vst3"
@@ -55,9 +57,10 @@ for preset in paths_to_presets:
             {"index": param.index, "name": param.name, "value": param.raw_value}
         )
 
-with open(
-    PATH_TO_TAL_FOLDER / "tal_noisemaker_presets.json", "w", encoding="utf-8"
-) as f:
-    json.dump(presets, f)
+if EXPORT_PRESETS:
+    with open(
+        PATH_TO_TAL_FOLDER / "tal_noisemaker_presets.json", "w", encoding="utf-8"
+    ) as f:
+        json.dump(presets, f)
 
 print(f"noisemaker_presets.json saved in {str(PATH_TO_TAL_FOLDER)}")
