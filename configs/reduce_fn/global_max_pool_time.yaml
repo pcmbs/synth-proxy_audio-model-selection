@@ -1,0 +1,3 @@
+# @package _global_
+
+reduce_fn: global_max_pool_time

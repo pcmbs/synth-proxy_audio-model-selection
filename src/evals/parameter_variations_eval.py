@@ -17,8 +17,6 @@ from torch.utils.data import DataLoader
 import torchmetrics.functional as tm_functional
 from torchmetrics.functional import pearson_corrcoef
 
-from utils.distances import iterative_distance_matrix
-
 # add parents directory to sys.path if run as as main (for debugging purposes)
 if __name__ == "__main__":
     import sys

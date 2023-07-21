@@ -2,12 +2,28 @@
 
 defaults:
   - _self_
-  #- data: nsynth 
+
+  # hydra config
   - hydra: default
-  - logger: wandb
+
+  # wandb logger config
+  - wandb: default
+
+  # model to evaluate
   - model: encodec48khz
-  - eval/nearest_neighbors: default # pass null to omit
+  
+  # evaluation to perform
+  - eval/nearest_neighbors: null # default # pass null to omit
   - eval/parameter_variations: tal_noisemaker
+
+  # function used to calculate the distance matrix of the sound embeddings 
+  # (must be the name of a torchmetrics.functional function)
+  - distance_fn: pairwise_manhattan_distance
+
+  # function used to reduce the embedding dimensionality
+  - reduce_fn: flatten
+
+  # paths related config
   - paths: default 
 
   # experiment to perform (concret ones, not debug ones)
@@ -23,14 +39,6 @@ seed: 667
 # as well as padding/truncating the audio data
 audio_length: 4.0
 
-# function used to calculate the distance matrix of the sound embeddings 
-# (must be the name of a torchmetrics.functional function)
-distance_fn: pairwise_manhattan_distance
-
-# function used to reduce the embedding dimensionality
-# available options: flatten, global_avg_pool_channel, global_avg_pool_time, 
-# global_max_pool_channel, global_max_pool_time
-reduce_fn: flatten
 
 # task name, determines output directory path
 task_name: ${model.name}

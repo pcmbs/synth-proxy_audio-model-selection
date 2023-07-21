@@ -1,0 +1,3 @@
+# @package _global_
+
+reduce_fn: global_avg_pool_channel

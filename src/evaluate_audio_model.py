@@ -12,6 +12,7 @@ import logging
 
 import hydra
 import torch
+import wandb
 from dotenv import load_dotenv
 from lightning import seed_everything
 from omegaconf import DictConfig
@@ -60,9 +61,9 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
     encoder.to(DEVICE)
 
     # instantiate wandb logger
-    if cfg.get("logger"):
+    if cfg.get("wandb"):
         log.info("Instantiating wandb logger")
-        logger = hydra.utils.call(cfg.logger)
+        logger = wandb.init(**cfg.wandb)
 
     # print torchinfo model summary
     torchinfo_summary = summary(
@@ -83,8 +84,10 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
         )
 
     if cfg.eval.get("nearest_neighbors"):
-        if not cfg.get("logger"):
-            log.info("nearest neighbors evaluation requires a logger, skipping...")
+        if not cfg.get("wandb"):
+            log.info(
+                "nearest neighbors evaluation requires a wandb logger, skipping..."
+            )
         else:
             log.info("Running nearest neighbors evaluation...")
 
@@ -98,7 +101,7 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
 
     #################### Logging hparams
 
-    if cfg.get("logger"):
+    if cfg.get("wandb"):
         log.info("Logging hyperparameters...")
         log_hyperparameters(
             cfg=cfg,
@@ -106,6 +109,7 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
             encoder=encoder,
             torchinfo_summary=torchinfo_summary,
         )
+        wandb.finish()  # required for hydra multirun
 
 
 if __name__ == "__main__":
