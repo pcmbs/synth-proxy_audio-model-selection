@@ -1,8 +1,8 @@
 # pylint: disable=E1101,C0413,W1203
 """
-Module containing functions for the parameter variations evaluation, which is 
-used to evaluate the ability of a model to discriminate between different values 
-of a synthesizer parameter.
+Module containing functions for the sound attributes ranking evaluation,
+used to evaluate the ability of a model to order sounds subject to monotonic changes of parameter values
+corresponding to different sound attributes.
 """
 
 import logging
@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     sys.path.insert(1, str(Path(__file__).parents[1]))
 
-from data.tal_noisemaker.noisemaker_dataset import NoisemakerVariationsDataset
+from data.tal_noisemaker.noisemaker_dataset import NoisemakerSoundAttributesDataset
 from utils.embeddings import compute_embeddings
 from utils import reduce_fn as r_fn
 
@@ -34,27 +34,29 @@ log = logging.getLogger(__name__)
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
-def parameter_variations_eval(
+def sound_attributes_ranking_eval(
     path_to_dataset: Union[Path, str],
     encoder: nn.Module,
     distance_fn: str,
     reduce_fn: str,
 ) -> Dict[str, float]:
     """
-    Parameter variations evaluation, used to evaluate the ability of a model to discriminate between different
-    values of a synthesizer parameter.
-    Given a dataset composed K groups, in which a single parameter is monotonously increased, the evaluation
+    Parameter values ranking evaluation, used to evaluate the ability of a model to order sounds
+    subject to monotonic changes of parameter values corresponding to different sound attributes.
+    Given a dataset composed K groups, in which a single parameter is monotonically increased, the evaluation
     can be described as follows:
     - (1): get the representation of each sound from a given `encoder` and a reduction function `reduce_fn`
     - (2): compute the distance matrix of each group using pairwise `distance_fn` (must be the name of a
     torchmetrics.functional function)
-    - (3): sort the sounds by ascending order of distance to the sound with the lowest parameter value for each group
-    - (4): sort the sounds by ascending order of distance to the sound with the highest parameter value for each group
+    - (3): sort the sounds by ascending order of distance to the sound with the lowest parameter value
+    for each group (lowest rank)
+    - (4): sort the sounds by ascending order of distance to the sound with the highest parameter value
+    for each group (highest rank)
     - (6): compute the Spearman's rank correlation coefficients for the ranking obtained in (3) and (4) for each group
     and take the mean.
 
     Args
-    - `path_to_dataset` (Union[Path, str]): The path to the dataset containing the different variations.
+    - `path_to_dataset` (Union[Path, str]): The path to the dataset containing the sound attributes dataset.
     - `encoder` (nn.Module): The encoder model to use to generate the embeddings.
     - `distance_fn` (str): The distance used for computing the distance matrix.
     - `reduce_fn` (str): The reduction function to use for reducing the embeddings dimensionality.
@@ -67,22 +69,22 @@ def parameter_variations_eval(
         Path(path_to_dataset) if isinstance(path_to_dataset, str) else path_to_dataset
     )
 
-    available_variations = sorted([p.stem for p in path_to_dataset.iterdir()])
-    if ".DS_Store" in available_variations:
-        available_variations.remove(".DS_Store")
+    available_atributes = sorted([p.stem for p in path_to_dataset.iterdir()])
+    if ".DS_Store" in available_atributes:
+        available_atributes.remove(".DS_Store")
 
     corrcoeffs = {}
 
-    for variation in available_variations:
-        corrcoeff_up, corrcoeff_down = _compute_corrcoeff_for_variation(
-            path_to_dataset, variation, encoder, distance_fn, reduce_fn
+    for attribute in available_atributes:
+        corrcoeff_up, corrcoeff_down = _compute_corrcoeff_for_attribute(
+            path_to_dataset, attribute, encoder, distance_fn, reduce_fn
         )
-        corrcoeffs[variation] = (corrcoeff_up + corrcoeff_down) / 2
+        corrcoeffs[attribute] = (corrcoeff_up + corrcoeff_down) / 2
         log.info(
-            f"Correlation coefficient for variation `{variation}`: \n"
+            f"Correlation coefficient for attribute `{attribute}`: \n"
             f"from first: {corrcoeff_up}\n"
             f"from last: {corrcoeff_down}\n"
-            f"mean: {corrcoeffs[variation]}"
+            f"mean: {corrcoeffs[attribute]}"
         )
 
     # compute the median correlation coefficient
@@ -92,15 +94,15 @@ def parameter_variations_eval(
     return corrcoeffs
 
 
-def _compute_corrcoeff_for_variation(
+def _compute_corrcoeff_for_attribute(
     path_to_dataset: Union[Path, str],
-    variation: str,
+    attribute: str,
     encoder: nn.Module,
     distance_fn: str,
     reduce_fn: str,
 ) -> Tuple[float, float]:
-    dataset = NoisemakerVariationsDataset(
-        root=path_to_dataset, variation_type=variation
+    dataset = NoisemakerSoundAttributesDataset(
+        root=path_to_dataset, sound_attribute=attribute
     )
 
     embeddings, rank = compute_embeddings(
@@ -148,7 +150,9 @@ if __name__ == "__main__":
     ###### to move in hydra config
     PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT"))
     PATH_TO_CKPT = PROJECT_ROOT / "checkpoints"
-    PATH_TO_DATASET = PROJECT_ROOT / "data/TAL-NoiseMaker/parameter_variations"
+    PATH_TO_DATASET = (
+        PROJECT_ROOT / "data/TAL-NoiseMaker/noisemaker_sound_attributes_dataset"
+    )
 
     DISTANCE_FN = "pairwise_manhattan_distance"
 
@@ -158,7 +162,7 @@ if __name__ == "__main__":
         repository=PATH_TO_CKPT, segment=1.0, overlap=0.0
     )
 
-    corrcoeff = parameter_variations_eval(
+    corrcoeff = sound_attributes_ranking_eval(
         PATH_TO_DATASET, encoder, DISTANCE_FN, REDUC_FN
     )
     print("breakpoint me!")

@@ -1,6 +1,6 @@
 # pylint: disable=E1101:no-member
 """
-Torch Dataset class for the TAL-Noisemaker parameter variations dataset
+Torch Dataset class for the TAL-Noisemaker sound attributes dataset.
 """
 import logging
 from pathlib import Path
@@ -13,39 +13,38 @@ from torch.utils.data import Dataset
 log = logging.getLogger(__name__)
 
 
-class NoisemakerVariationsDataset(Dataset):
+class NoisemakerSoundAttributesDataset(Dataset):
     """
-    Torch Dataset class for the TAL-Noisemaker parameter variations dataset.
-    For each variation_type, a single parameter is modified to a specific interval.
+    Torch Dataset class for the TAL-Noisemaker sound attributes dataset.
     """
 
     def __init__(
         self,
         root: Union[Path, str],
-        variation_type: str,
+        sound_attribute: str,
     ):
         """
         Args
-        - `root` (Union[Path, str]): The path to the parameter variations dataset.
-        - `variation_type` (str): name of the parameter used for evaluation.
+        - `root` (Union[Path, str]): The path to the sound attributes dataset.
+        - `sound_attribute` (str): name of the sound attribute used for evaluation.
         """
 
         root = Path(root) if isinstance(root, str) else root
         if not root.is_dir():
             raise ValueError(f"{root} is not a directory.")
 
-        available_variations = sorted([p.stem for p in root.iterdir()])
-        if ".DS_Store" in available_variations:
-            available_variations.remove(".DS_Store")
+        available_attributes = sorted([p.stem for p in root.iterdir()])
+        if ".DS_Store" in available_attributes:
+            available_attributes.remove(".DS_Store")
 
-        if variation_type not in available_variations:
+        if sound_attribute not in available_attributes:
             raise ValueError(
-                f"'{variation_type}' is not a valid variation type. "
-                f"Available variations: {available_variations}"
+                f"'{sound_attribute}' is not a valid sound attribute. "
+                f"Available attributes: {available_attributes}"
             )
-        self._variation_type = variation_type
+        self._sound_attribute = sound_attribute
 
-        self._path_to_audio = root / f"{variation_type}"
+        self._path_to_audio = root / f"{sound_attribute}"
 
         self._file_stems = sorted([p.stem for p in self._path_to_audio.glob("*.wav")])
 
@@ -65,8 +64,8 @@ class NoisemakerVariationsDataset(Dataset):
         return self._audio_length
 
     @property
-    def variation_type(self):
-        return self._variation_type
+    def sound_attribute(self):
+        return self._sound_attribute
 
     @property
     def path_to_audio(self):
@@ -80,7 +79,7 @@ class NoisemakerVariationsDataset(Dataset):
         return len(self.file_stems)
 
     def __str__(self):
-        return f"NoisemakerVariationsDataset: {len(self)} samples found for variation `{self.variation_type}`."
+        return f"NoisemakerSoundAttributesDataset: {len(self)} samples found for attribute `{self.sound_attribute}`."
 
     def __getitem__(self, index: int) -> tuple[torch.Tensor, int]:
         name = self.file_stems[index]
@@ -91,32 +90,4 @@ class NoisemakerVariationsDataset(Dataset):
 
 
 if __name__ == "__main__":
-    # import os
-    # import sys
-    # from dotenv import load_dotenv
-
-    # # add parents directory to sys.path.
-    # sys.path.insert(1, str(Path(__file__).parents[2]))
-    # from src.utils.embeddings import get_embeddings
-    # from src.models.encodec.encoder import EncodecEncoder
-
-    # load_dotenv()
-    # PATH_TO_DATASET = (
-    #     Path(os.getenv("PROJECT_ROOT"))
-    #     / "data"
-    #     / "TAL-NoiseMaker"
-    #     / "parameter_variations"
-    # )
-    # VARIATION_TYPE = "amp_attack"
-
-    # dataset = NoisemakerVariationsDataset(
-    #     root=PATH_TO_DATASET, variation_type=VARIATION_TYPE
-    # )
-
-    # dataloader = DataLoader(dataset, batch_size=len(dataset), shuffle=False)
-
-    # # encoder = EncodecEncoder()
-
-    # # audio, ranks =
-
     print("breakpoint me!")

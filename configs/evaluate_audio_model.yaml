@@ -14,7 +14,7 @@ defaults:
   
   # evaluation to perform
   - eval/nearest_neighbors: null # default # pass null to omit
-  - eval/parameter_variations: tal_noisemaker
+  - eval/sound_attributes_ranking: tal_noisemaker
 
   # function used to calculate the distance matrix of the sound embeddings 
   # (must be the name of a torchmetrics.functional function)

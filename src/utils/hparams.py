@@ -20,7 +20,7 @@ def log_hyperparameters(
     torchinfo_summary: ModelStatistics,
 ) -> None:
     """
-    log hparams to wandb.
+    summary statistics and hparams to log to wandb.
     """
 
     hparams = {}
@@ -32,11 +32,11 @@ def log_hyperparameters(
     hparams["general/reduce_fn"] = cfg.get("reduce_fn")
 
     ##### Evaluation related hparams
-    if cfg.eval.get("parameter_variations"):
-        sub_cfg = cfg.eval.parameter_variations
-        hparams["pv/synth"] = sub_cfg.get("root").split("/")[-2]
+    if cfg.eval.get("sound_attributes_ranking"):
+        sub_cfg = cfg.eval.sound_attributes_ranking
+        hparams["attr_ranking/synth"] = sub_cfg.get("root").split("/")[-2]
         for key, val in corrcoefs.items():
-            wandb.run.summary[f"pv/{key}"] = val
+            wandb.run.summary[f"attr_ranking/{key}"] = val
 
     if cfg.eval.get("nearest_neighbors"):
         sub_cfg = cfg.eval.nearest_neighbors.data

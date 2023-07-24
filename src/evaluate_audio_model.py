@@ -3,8 +3,8 @@
 Evaluate an audio model based on the provided configuration and log the result and used hyperparameters to wandb.
 The available evaluations are:
 - `nearest_neighbors_eval`: evaluate the ability of a model to order sounds by "similarity".
-- `parameter_variations_eval`: evaluate the ability of a model to discriminate between different values
-of a synthesizer parameter.
+- `parameter_values_ranking_eval`: used to evaluate the ability of a model to order sounds
+subject to monotonic changes of parameter values corresponding to different sound attributes.
 
 See corresponding modules for more details.
 """
@@ -19,7 +19,7 @@ from omegaconf import DictConfig
 from torch.nn import Module
 from torchinfo import summary
 
-from evals import nearest_neighbors_eval, parameter_variations_eval
+from evaluations import nearest_neighbors_eval, sound_attributes_ranking_eval
 from utils.hparams import log_hyperparameters
 
 load_dotenv()  # take environment variables from .env for hydra configs
@@ -39,8 +39,8 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
     Evaluate an audio model based on the provided configuration and log the result and used hyperparameters to wandb.
     The available evaluations are:
     - `nearest_neighbors_eval`: evaluate the ability of a model to order sounds by "similarity".
-    - `parameter_variations_eval`: evaluate the ability of a model to discriminate between different values
-    of a synthesizer parameter.
+    - `parameter_variations_eval`: used to evaluate the ability of a model to order sounds subject to monotonic
+    changes of parameter values corresponding to different sound attributes.
 
     See corresponding modules for more details.
 
@@ -74,9 +74,9 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
     #################### evaluations
 
     if cfg.eval.get("parameter_variations"):
-        log.info("Running parameter variations evaluation...")
+        log.info("Running parameter values ranking evaluation...")
 
-        corrcoefs = parameter_variations_eval(
+        corrcoefs = sound_attributes_ranking_eval(
             path_to_dataset=cfg.eval.parameter_variations.root,
             encoder=encoder,
             distance_fn=cfg.distance_fn,

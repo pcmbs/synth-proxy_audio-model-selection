@@ -1,5 +1,5 @@
-from .noisemaker_dataset import NoisemakerVariationsDataset
-from . import parameter_variations
+from .noisemaker_dataset import NoisemakerSoundAttributesDataset
+from . import noisemaker_preset_mods
 
 # from .parameter_variations import (
 #     amp_attack,
