@@ -41,7 +41,7 @@ def sound_attributes_ranking_eval(
     reduce_fn: str,
 ) -> Dict[str, float]:
     """
-    Parameter values ranking evaluation, used to evaluate the ability of a model to order sounds
+    Sound attributes ranking evaluation, used to evaluate the ability of a model to order sounds
     subject to monotonic changes of parameter values corresponding to different sound attributes.
     Given a dataset composed K groups, in which a single parameter is monotonically increased, the evaluation
     can be described as follows:

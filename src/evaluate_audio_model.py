@@ -39,7 +39,7 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
     Evaluate an audio model based on the provided configuration and log the result and used hyperparameters to wandb.
     The available evaluations are:
     - `nearest_neighbors_eval`: evaluate the ability of a model to order sounds by "similarity".
-    - `parameter_variations_eval`: used to evaluate the ability of a model to order sounds subject to monotonic
+    - `sound_attributes_ranking_eval`: used to evaluate the ability of a model to order sounds subject to monotonic
     changes of parameter values corresponding to different sound attributes.
 
     See corresponding modules for more details.
@@ -73,11 +73,11 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
 
     #################### evaluations
 
-    if cfg.eval.get("parameter_variations"):
-        log.info("Running parameter values ranking evaluation...")
+    if cfg.eval.get("sound_attributes_ranking"):
+        log.info("Running sound attributes ranking evaluation...")
 
         corrcoefs = sound_attributes_ranking_eval(
-            path_to_dataset=cfg.eval.parameter_variations.root,
+            path_to_dataset=cfg.eval.sound_attributes_ranking.root,
             encoder=encoder,
             distance_fn=cfg.distance_fn,
             reduce_fn=cfg.reduce_fn,
@@ -105,7 +105,7 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
         log.info("Logging hyperparameters...")
         log_hyperparameters(
             cfg=cfg,
-            corrcoefs=corrcoefs if cfg.eval.get("parameter_variations") else None,
+            corrcoefs=corrcoefs if cfg.eval.get("sound_attributes_ranking") else None,
             encoder=encoder,
             torchinfo_summary=torchinfo_summary,
         )
