@@ -16,5 +16,5 @@ wandb/
 !configs/wandb/
 
 data/TAL-NoiseMaker/*vst3
-data/TAL-NoiseMaker/parameter_variations/
+data/TAL-NoiseMaker/noisemaker_sound_attributes_dataset/
 data/nsynth-lite/
