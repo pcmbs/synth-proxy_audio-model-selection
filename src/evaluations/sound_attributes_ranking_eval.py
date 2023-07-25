@@ -43,8 +43,8 @@ def sound_attributes_ranking_eval(
     """
     Sound attributes ranking evaluation, used to evaluate the ability of a model to order sounds
     subject to monotonic changes of parameter values corresponding to different sound attributes.
-    Given a dataset composed K groups, in which a single parameter is monotonically increased, the evaluation
-    can be described as follows:
+    Given a dataset composed K groups, in which a single parameter is monotonically increased in order to
+    modify a given sound attribute, the evaluation can be described as follows:
     - (1): get the representation of each sound from a given `encoder` and a reduction function `reduce_fn`
     - (2): compute the distance matrix of each group using pairwise `distance_fn` (must be the name of a
     torchmetrics.functional function)
@@ -52,7 +52,7 @@ def sound_attributes_ranking_eval(
     for each group (lowest rank)
     - (4): sort the sounds by ascending order of distance to the sound with the highest parameter value
     for each group (highest rank)
-    - (6): compute the Spearman's rank correlation coefficients for the ranking obtained in (3) and (4) for each group
+    - (5): compute the Spearman's rank correlation coefficients for the ranking obtained in (3) and (4) for each group
     and take the mean.
 
     Args
