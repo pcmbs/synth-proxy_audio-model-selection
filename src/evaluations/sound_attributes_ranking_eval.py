@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     sys.path.insert(1, str(Path(__file__).parents[1]))
 
-from data.tal_noisemaker.noisemaker_dataset import NoisemakerSoundAttributesDataset
+from data.tal_noisemaker.noisemaker_dataset import SoundAttributesDataset
 from utils.embeddings import compute_embeddings
 from utils import reduce_fn as r_fn
 
@@ -101,11 +101,9 @@ def _compute_corrcoeff_for_attribute(
     distance_fn: str,
     reduce_fn: str,
 ) -> Tuple[float, float]:
-    dataset = NoisemakerSoundAttributesDataset(
-        root=path_to_dataset, sound_attribute=attribute
-    )
+    dataset = SoundAttributesDataset(root=path_to_dataset, sound_attribute=attribute)
 
-    embeddings, rank = compute_embeddings(
+    embeddings, (groups, ranks) = compute_embeddings(
         encoder=encoder,
         dataloader=DataLoader(dataset, batch_size=len(dataset), shuffle=False),
         num_samples=-1,
@@ -116,25 +114,43 @@ def _compute_corrcoeff_for_attribute(
         pbar=False,
     )
 
-    embeddings = getattr(r_fn, reduce_fn)(embeddings)
+    group_dict = {}
+    for i, group in enumerate(groups):
+        group_key = group.item()
+        if group_key not in group_dict.keys():
+            group_dict[group_key] = {"embeddings": [], "rank": []}
+        group_dict[group_key]["embeddings"].append(embeddings[i])
+        group_dict[group_key]["rank"].append(ranks[i])
 
-    distance_matrix = getattr(tm_functional, distance_fn)(embeddings)
+    corrcoeff_up = torch.empty(len(group_dict))
+    corrcoeff_down = torch.empty(len(group_dict))
 
-    indices = torch.argsort(
-        distance_matrix,
-        dim=1,
-        descending=distance_fn == "pairwise_cosine_similarity",
-    )
+    for i, group in group_dict.items():
+        embeddings_from_group = torch.stack(group["embeddings"], dim=0)
+        ranks_from_group = torch.tensor(group["rank"]).float()
 
-    ranking_target = torch.tensor(rank[1:]).float().to(DEVICE)
+        embeddings_from_group = getattr(r_fn, reduce_fn)(embeddings_from_group)
 
-    corrcoeff_up = pearson_corrcoef(
-        preds=indices[0, 1:].float(), target=ranking_target
-    ).item()
+        distance_matrix = getattr(tm_functional, distance_fn)(embeddings_from_group)
 
-    corrcoeff_down = pearson_corrcoef(
-        preds=indices[-1, 1:].float(), target=ranking_target.flip(0) - 1
-    ).item()
+        indices = torch.argsort(
+            distance_matrix,
+            dim=1,
+            descending=distance_fn == "pairwise_cosine_similarity",
+        )
+
+        ranking_target = ranks_from_group[1:].clone().detach().to(DEVICE)
+
+        corrcoeff_up[i] = pearson_corrcoef(
+            preds=indices[0, 1:].float(), target=ranking_target
+        ).item()
+
+        corrcoeff_down[i] = pearson_corrcoef(
+            preds=indices[-1, 1:].float(), target=ranking_target.flip(0) - 1
+        ).item()
+
+    corrcoeff_up = corrcoeff_up.mean()
+    corrcoeff_down = corrcoeff_down.mean()
 
     return corrcoeff_up, corrcoeff_down
 
@@ -151,7 +167,7 @@ if __name__ == "__main__":
     PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT"))
     PATH_TO_CKPT = PROJECT_ROOT / "checkpoints"
     PATH_TO_DATASET = (
-        PROJECT_ROOT / "data/TAL-NoiseMaker/noisemaker_sound_attributes_dataset"
+        PROJECT_ROOT / "data/TAL-NoiseMaker/sound_attributes_ranking_dataset"
     )
 
     DISTANCE_FN = "pairwise_manhattan_distance"

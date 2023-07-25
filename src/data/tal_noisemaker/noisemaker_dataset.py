@@ -13,7 +13,7 @@ from torch.utils.data import Dataset
 log = logging.getLogger(__name__)
 
 
-class NoisemakerSoundAttributesDataset(Dataset):
+class SoundAttributesDataset(Dataset):
     """
     Torch Dataset class for the TAL-Noisemaker sound attributes dataset.
     """
@@ -79,14 +79,15 @@ class NoisemakerSoundAttributesDataset(Dataset):
         return len(self.file_stems)
 
     def __str__(self):
-        return f"NoisemakerSoundAttributesDataset: {len(self)} samples found for attribute `{self.sound_attribute}`."
+        return f"SoundAttributesDataset: {len(self)} samples found for attribute `{self.sound_attribute}`."
 
     def __getitem__(self, index: int) -> tuple[torch.Tensor, int]:
         name = self.file_stems[index]
+        group = int(name.split("-")[-2])
         rank = int(name.split("-")[-1])
         with open(self._path_to_audio / f"{name}.wav", "rb") as f:
             audio, _ = torchaudio.load(f)
-        return audio, rank
+        return audio, (group, rank)
 
 
 if __name__ == "__main__":

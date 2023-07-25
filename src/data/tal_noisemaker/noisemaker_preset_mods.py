@@ -54,24 +54,24 @@ class PresetModList:
     Dataclass to hold a list of PresetMod instances.
 
     Args:
-    - `base_param_name` (str):name of the parameter to modify
+    - `sound_attribute` (str): name of the sound attribute of the current instance.
     - `param_idx` (int): index of the parameter to modify
     - `extra_params` (tuple[tuple[int, float],...]): extra parameters to modify (common to all modified presets).
-    - `presets` (list[PresetMod]): list of PresetMod instances.
+    - `preset_mods` (list[PresetMod]): list of PresetMod instances.
     """
 
-    base_param_name: str
+    sound_attribute: str
     param_idx: int
     extra_params: Tuple[Tuple[int, float], ...]
-    presets: List[PresetMod]
+    preset_mods: List[PresetMod]
 
 
 amp_attack = PresetModList(
-    base_param_name="Amp Attack",
-    param_idx=11,
+    sound_attribute="amp_attack",
+    param_idx=11,  # `Amp Attack`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     extra_params=((46, 1.0), (48, 1.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # amp_attack_0
             preset="default",
             interval=(0.0, 0.8),
@@ -80,7 +80,7 @@ amp_attack = PresetModList(
             preset="default",
             interval=(0.0, 0.8),
             # set `Osc 1 Waveform` to 0.5 (square wave)
-            extra_params=((23, 0.5)),
+            extra_params=((23, 0.5),),
         ),
         PresetMod(  # amp_attack_2
             preset="ARP 303 Like FN",
@@ -90,7 +90,7 @@ amp_attack = PresetModList(
             preset="ARP C64 II FN",
             interval=(0.0, 0.8),
             # set `Reverb Wet` to 0
-            extra_params=((60, 0.0)),
+            extra_params=((60, 0.0),),
         ),
         PresetMod(  # amp_attack_4
             preset="BS 7th Gates FN",
@@ -116,24 +116,24 @@ amp_attack = PresetModList(
             preset="FX Noiz3machin3 FN",
             interval=(0.0, 0.8),
             # set `Reverb Wet` to 0
-            extra_params=((60, 0.0)),
+            extra_params=((60, 0.0),),
         ),
     ],
 )
 
 
 amp_decay = PresetModList(
-    base_param_name="Amp Decay",
-    param_idx=12,
+    sound_attribute="amp_decay",
+    param_idx=12,  # `Amp Decay`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     # set `Amp Sustain` to 0.0
     extra_params=((46, 1.0), (48, 1.0), (13, 0.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # amp_decay_0
             preset="CH Open Mind FN",
             interval=(0.2, 0.6),
             # set `Reverb Wet` to 0
-            extra_params=((60, 0.0)),
+            extra_params=((60, 0.0),),
         ),
         PresetMod(  # amp_decay_1
             preset="default",
@@ -143,7 +143,7 @@ amp_decay = PresetModList(
             preset="default",
             interval=(0.2, 0.6),
             # set `Osc 1 Waveform` to 0.5 (square wave)
-            extra_params=((23, 0.5)),
+            extra_params=((23, 0.5),),
         ),
         PresetMod(  # amp_decay_3
             preset="KB Pop Pluck TUC",
@@ -165,29 +165,29 @@ amp_decay = PresetModList(
             preset="PD Gated Pad TAL",
             interval=(0.2, 0.6),
             # set `Amp Attack` to 0.0
-            extra_params=((11, 0.0)),
+            extra_params=((11, 0.0),),
         ),
         PresetMod(  # amp_decay_8
             preset="DR Kick Old School TAL",
             interval=(0.2, 0.6),
             # set `Amp Attack` to 0.0
-            extra_params=((11, 0.0)),
+            extra_params=((11, 0.0),),
         ),
         PresetMod(  # amp_decay_9
-            preset="FX Jumper TAL",
+            preset="FX  Jumper TAL",
             interval=(0.2, 0.6),
             # set `Amp Attack` to 0.0
-            extra_params=((11, 0.0)),
+            extra_params=((11, 0.0),),
         ),
     ],
 )
 
 filter_cutoff = PresetModList(
-    base_param_name="Filter Cutoff",
-    param_idx=3,
+    sound_attribute="filter_cutoff",
+    param_idx=3,  # `Filter Cutoff`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     extra_params=((46, 1.0), (48, 1.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # filter_cutoff_0
             preset="BS Deep Driver TAL",
             interval=(0.22, 0.8),
@@ -203,13 +203,13 @@ filter_cutoff = PresetModList(
             preset="default",
             interval=(0.22, 0.8),
             # set `Osc 1 Waveform` to 0.5 (square wave)
-            extra_params=((23, 0.5)),
+            extra_params=((23, 0.5),),
         ),
         PresetMod(  # filter_cutoff_3
             preset="ARP C64 FN",
             interval=(0.22, 0.8),
             # set `Filter Decay` to 0.0
-            extra_params=((8, 0.0)),
+            extra_params=((8, 0.0),),
         ),
         PresetMod(  # filter_cutoff_4
             preset="ARP Phasing Saws TAL",
@@ -239,7 +239,7 @@ filter_cutoff = PresetModList(
             extra_params=((7, 0.16), (8, 0.38)),
         ),
         PresetMod(  # filter_cutoff_9
-            preset="FX Mettalica FN",
+            preset="FX Metallica FN",
             interval=(0.0, 0.6),
         ),
     ],
@@ -247,22 +247,22 @@ filter_cutoff = PresetModList(
 
 
 filter_decay = PresetModList(
-    base_param_name="Filter Decay",
-    param_idx=8,
+    sound_attribute="filter_decay",
+    param_idx=8,  # `Filter Decay`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     extra_params=((46, 1.0), (48, 1.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # filter_decay_0
             preset="LD 8bitter II FN",
             interval=(0.4, 0.68),
             # set `Reverb Wet` to 0
-            extra_params=((60, 0.0)),
+            extra_params=((60, 0.0),),
         ),
         PresetMod(  # filter_decay_1
             preset="ARP Demotrack ARP FN",
             interval=(0.2, 0.6),
             # set `Lfo 2 Amount` to 0.5
-            extra_params=((31, 0.5)),
+            extra_params=((31, 0.5),),
         ),
         PresetMod(  # filter_decay_2
             preset="BS 7th Gates FN",
@@ -272,13 +272,13 @@ filter_decay = PresetModList(
             preset="BS Bassolead FN",
             interval=(0.2, 0.6),
             # set `Filter Attack` to 0.05
-            extra_params=((7, 0.05)),
+            extra_params=((7, 0.05),),
         ),
         PresetMod(  # filter_decay_4
             preset="BS Basspa FN",
             interval=(0.2, 0.6),
             # set `Filter Attack` to 0.05
-            extra_params=((7, 0.05)),
+            extra_params=((7, 0.05),),
         ),
         PresetMod(  # filter_decay_5
             preset="CH Chordionator II FN",
@@ -291,10 +291,10 @@ filter_decay = PresetModList(
             preset="CH Open Mind FN",
             interval=(0.2, 0.6),
             # set `Filter Cutoff` to 0.1
-            extra_params=((3, 0.1)),
+            extra_params=((3, 0.1),),
         ),
         PresetMod(  # filter_decay_7
-            preset="DR 8 bit Kick III FN",
+            preset="DR 8bit  Kick III FN",
             interval=(0.2, 0.6),
         ),
         PresetMod(  # filter_decay_8
@@ -305,46 +305,46 @@ filter_decay = PresetModList(
             preset="LD Aggggggro TAL",
             interval=(0.2, 0.6),
             # set `Filter Attack` to 0.05
-            extra_params=((7, 0.05)),
+            extra_params=((7, 0.05),),
         ),
     ],
 )
 
 
 filter_resonance = PresetModList(
-    base_param_name="Filter Resonance",
-    param_idx=4,
+    sound_attribute="filter_resonance",
+    param_idx=4,  # `Filter Resonance`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     extra_params=((46, 1.0), (48, 1.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # filter_resonance_0
             preset="BS Clean Flat Bass TAL",
             interval=(0.2, 0.95),
             # set `Filter Type` to 0.0 (LP 24)
-            extra_params=((2, 0.0)),
+            extra_params=((2, 0.0),),
         ),
         PresetMod(  # filter_resonance_1
             preset="ARP 303 Like II FN",
             interval=(0.4, 1.0),
             # set `Filter Type` to 0.0 (LP 24)
-            extra_params=((2, 0.0)),
+            extra_params=((2, 0.0),),
         ),
         PresetMod(  # filter_resonance_2
-            preset="ARP 2050 Punk FN",
+            preset="ARP 2050 Punk TAL",
             interval=(0.6, 1.0),
         ),
         PresetMod(  # filter_resonance_3
             preset="DR Kick III FN",
             interval=(0.4, 1.0),
             # Set `Filter Decay` to 0.4
-            extra_params=((8, 0.4)),
+            extra_params=((8, 0.4),),
         ),
         PresetMod(  # filter_resonance_4
-            preset="FX Clean Noise Ramp TA",
+            preset="FX Clean Noise Ramp TAL",
             interval=(0.2, 0.95),
         ),
         PresetMod(  # filter_resonance_5
-            preset="FX Jumper TA",
+            preset="FX  Jumper TAL",
             interval=(0.2, 0.95),
         ),
         PresetMod(  # filter_resonance_6
@@ -366,11 +366,11 @@ filter_resonance = PresetModList(
     ],
 )
 frequency_mod = PresetModList(
-    base_param_name="Osc 2 FM",
-    param_idx=36,
+    sound_attribute="frequency_mod",
+    param_idx=36,  # `Osc 2 FM`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     extra_params=((46, 1.0), (48, 1.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # frequency_mod_0
             preset="KB Smooth Sine TAL",
             interval=(0.0, 1.0),
@@ -410,23 +410,23 @@ frequency_mod = PresetModList(
             interval=(0.0, 1.0),
         ),
         PresetMod(  # frequency_mod_9
-            preset="LD Everglade Walk FN",
+            preset="LD Everglade Walk TAL",
             interval=(0.0, 1.0),
         ),
     ],
 )
 
 lfo_amount_on_amp = PresetModList(
-    base_param_name="Lfo 2 Amount",
-    param_idx=31,
+    sound_attribute="lfo_amount_on_amp",
+    param_idx=31,  # `Lfo 2 Amount`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     extra_params=((46, 1.0), (48, 1.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # lfo_amount_on_amp_0
             preset="LD Mellow Chord TAL",
             interval=(0.75, 1.0),
             # set `Delay Wet` to 0.0
-            extra_params=((78, 0.0)),
+            extra_params=((78, 0.0),),
         ),
         PresetMod(  # lfo_amount_on_amp_1
             preset="ARP On The Run TUC",
@@ -485,16 +485,16 @@ lfo_amount_on_amp = PresetModList(
 )
 
 lfo_amount_on_filter = PresetModList(
-    base_param_name="Lfo 2 Amount",
-    param_idx=31,
+    sound_attribute="lfo_amount_on_filter",
+    param_idx=31,  # `Lfo 2 Amount`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     extra_params=((46, 1.0), (48, 1.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # lfo_amount_on_filter_0
             preset="LD Power Lead TAL",
             interval=(0.33, 0.0),
             # set `Lfo 2 Rate` to 0.45
-            extra_params=((29, 0.45)),
+            extra_params=((29, 0.45),),
         ),
         PresetMod(  # lfo_amount_on_filter_1
             preset="BS Big Starter TAL",
@@ -530,7 +530,7 @@ lfo_amount_on_filter = PresetModList(
             preset="LD Noisy Sync Lead TAL",
             interval=(0.5, 1.0),
             # set `Lfo 2 Rate` to 0.5
-            extra_params=((29, 0.5)),
+            extra_params=((29, 0.5),),
         ),
         PresetMod(  # lfo_amount_on_filter_8
             preset="LD Resobells FN",
@@ -540,18 +540,18 @@ lfo_amount_on_filter = PresetModList(
             preset="LD Acid Dist Noisy TAL",
             interval=(0.5, 0.0),
             # set `Lfo 2 Rate` to 0.5
-            extra_params=((29, 0.3)),
+            extra_params=((29, 0.3),),
         ),
     ],
 )
 
 
 lfo_amount_on_pitch = PresetModList(
-    base_param_name="Lfo 2 Amount",
-    param_idx=31,
+    sound_attribute="lfo_amount_on_pitch",
+    param_idx=31,  # `Lfo 2 Amount`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     extra_params=((46, 1.0), (48, 1.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # lfo_amount_on_pitch_0
             preset="BS Eager Beaver AS",
             interval=(0.60, 1.0),
@@ -617,23 +617,23 @@ lfo_amount_on_pitch = PresetModList(
             preset="KB Chimp Organ TUC",
             interval=(0.55, 1.0),
             # set `Lfo 2 Destination` to 1.0 (Osc1 & 2)
-            extra_params=((33, 1.0)),
+            extra_params=((33, 1.0),),
         ),
         PresetMod(  # lfo_amount_on_pitch_9
-            preset="KB Ghostly Glomp TUC",
+            preset="KB Ghostly Glomp AS",
             interval=(0.55, 1.0),
             # set `Osc 3 Volume` to 0.5
-            extra_params=((17, 1.0)),
+            extra_params=((17, 1.0),),
         ),
     ],
 )
 
 lfo_rate_on_amp = PresetModList(
-    base_param_name="Lfo 2 Rate",
-    param_idx=29,
+    sound_attribute="lfo_rate_on_amp",
+    param_idx=29,  # `Lfo 2 Rate`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     extra_params=((46, 1.0), (48, 1.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # lfo_rate_on_amp_0
             preset="LD Mellow Chord TAL",
             interval=(0.25, 0.66),
@@ -670,13 +670,13 @@ lfo_rate_on_amp = PresetModList(
             preset="KB Glockenschlag FN",
             interval=(0.4, 0.6),
             # set `Lfo 2 Amount` to 1.0
-            extra_params=((31, 1.0)),
+            extra_params=((31, 1.0),),
         ),
         PresetMod(  # lfo_rate_on_amp_6
             preset="LD Mod-U-Crush AS",
             interval=(0.4, 0.6),
             # set `Lfo 2 Sync` to 0.0
-            extra_params=((47, 0.0)),
+            extra_params=((47, 0.0),),
         ),
         PresetMod(  # lfo_rate_on_amp_7
             preset="LD Thin Lead TAL",
@@ -689,7 +689,7 @@ lfo_rate_on_amp = PresetModList(
             preset="PD Bellomatism FN",
             interval=(0.4, 0.6),
             # set `Lfo 2 Amount` to 0.95
-            extra_params=((31, 0.95)),
+            extra_params=((31, 0.95),),
         ),
         PresetMod(  # lfo_rate_on_amp_9
             preset="PD Gated Pad TAL",
@@ -702,16 +702,16 @@ lfo_rate_on_amp = PresetModList(
 )
 
 lfo_rate_on_filter = PresetModList(
-    base_param_name="Lfo 2 Rate",
-    param_idx=29,
+    sound_attribute="lfo_rate_on_filter",
+    param_idx=29,  # `Lfo 2 Rate`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     extra_params=((46, 1.0), (48, 1.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # lfo_rate_on_filter_0
             preset="LD Acid Dist Noisy TAL",
             interval=(0.14, 0.6),
             # set `Delay Wet` to 0.0
-            extra_params=((78, 0.0)),
+            extra_params=((78, 0.0),),
         ),
         PresetMod(  # lfo_rate_on_filter_1
             preset="BS Big Starter TAL",
@@ -726,39 +726,43 @@ lfo_rate_on_filter = PresetModList(
             preset="BS Flamming Bass FN",
             interval=(0.14, 0.6),
             # set `Lfo 2 Amount` to 0.70
-            extra_params=((31, 0.70)),
+            extra_params=((31, 0.70),),
         ),
         PresetMod(  # lfo_rate_on_filter_3
             preset="BS Juicy Bass TUC",
             interval=(0.14, 0.6),
             # set `Lfo 2 Amount` to 0.75
-            extra_params=((31, 0.75)),
+            extra_params=((31, 0.75),),
         ),
         PresetMod(  # lfo_rate_on_filter_4
             preset="BS LFO Roller FN",
             interval=(0.14, 0.6),
             # set `Lfo 2 Amount` to 0.70
             # set `Lfo 1 Sync` and `Lfo 2 Sync` to 0.0
-            extra_params=((31, 0.70), (45, 0.0), (47, 0.0)),
+            extra_params=(
+                (31, 0.70),
+                (45, 0.0),
+                (47, 0.0),
+            ),
         ),
         PresetMod(  # lfo_rate_on_filter_5
             preset="BS Tripple Wobbler TAL",
             param_idx=30,  # `Lfo 1 Amount`
             interval=(0.33, 0.6),
             # set `Lfo 1 Sync` to 0.0
-            extra_params=((45, 0.0)),
+            extra_params=((45, 0.0),),
         ),
         PresetMod(  # lfo_rate_on_filter_6
             preset="LD Sci Fi Organ TAL",
             interval=(0.14, 0.6),
             # set `Lfo 2 Amount` to 0.70
-            extra_params=((31, 0.70)),
+            extra_params=((31, 0.70),),
         ),
         PresetMod(  # lfo_rate_on_filter_7
             preset="LD Noisy Sync Lead TAL",
             interval=(0.14, 0.6),
             # set `Lfo 2 Amount` to 0.7
-            extra_params=((31, 0.7)),
+            extra_params=((31, 0.7),),
         ),
         PresetMod(  # lfo_rate_on_filter_8
             preset="LD Resobells FN",
@@ -779,11 +783,11 @@ lfo_rate_on_filter = PresetModList(
 
 
 lfo_rate_on_pitch = PresetModList(
-    base_param_name="Lfo 2 Rate",
-    param_idx=29,
+    sound_attribute="lfo_rate_on_pitch",
+    param_idx=29,  # `Lfo 2 Rate`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     extra_params=((46, 1.0), (48, 1.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # lfo_rate_on_pitch_0
             preset="BS Eager Beaver AS",
             interval=(0.2, 0.6),
@@ -836,7 +840,7 @@ lfo_rate_on_pitch = PresetModList(
             preset="CH SIDchord FN",
             interval=(0.2, 0.6),
             # set `Lfo 2 Destination` to 1.0 (Osc1 & 2)
-            extra_params=((33, 1.0)),
+            extra_params=((33, 1.0),),
         ),
         PresetMod(  # lfo_rate_on_pitch_7
             preset="FX Turntable FN",
@@ -854,7 +858,7 @@ lfo_rate_on_pitch = PresetModList(
             extra_params=((31, 0.6), (33, 1.0)),
         ),
         PresetMod(  # lfo_rate_on_pitch_9
-            preset="KB Ghostly Glomp TUC",
+            preset="KB Ghostly Glomp AS",
             interval=(0.55, 1.0),
             # set `Osc 3 Volume` to 0.5
             # set `Lfo 2 Amount` to 0.25
@@ -864,17 +868,17 @@ lfo_rate_on_pitch = PresetModList(
 )
 
 pitch_coarse = PresetModList(
-    base_param_name="Osc 1 Tune",
-    param_idx=19,
+    sound_attribute="pitch_coarse",
+    param_idx=19,  # `Osc 1 Tune`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     # set `Envelop Amount` to 0.0
     extra_params=((46, 1.0), (48, 1.0), (73, 0.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # pitch_coarse_0
             preset="default",
             interval=(0.25, 0.5),
             # set `Osc 3 Volume` to 0
-            extra_params=((17, 0.0)),
+            extra_params=((17, 0.0),),
         ),
         PresetMod(  # pitch_coarse_1
             preset="default",
@@ -895,7 +899,7 @@ pitch_coarse = PresetModList(
             preset="BS Clean Flat Bass TAL",
             interval=(0.25, 0.5),
             # set `Osc 3 Volume` to 0
-            extra_params=((17, 0.0)),
+            extra_params=((17, 0.0),),
         ),
         PresetMod(  # pitch_coarse_5
             preset="BS Goodspeed FN",
@@ -906,28 +910,28 @@ pitch_coarse = PresetModList(
             interval=(0.25, 0.5),
         ),
         PresetMod(  # pitch_coarse_7
-            preset="FX Jumper TAL",
+            preset="FX  Jumper TAL",
             interval=(0.25, 0.5),
             # set `Osc 3 Volume` to 0
-            extra_params=((17, 0.0)),
+            extra_params=((17, 0.0),),
         ),
         PresetMod(  # pitch_coarse_8
             preset="LD Analog Down Glider TAL",
             interval=(0.25, 0.5),
         ),
         PresetMod(  # pitch_coarse_9
-            preset="LD Drop in Pulse TAL",
+            preset="LD Drop In Pulse TAL",
             interval=(0.25, 0.5),
         ),
     ],
 )
 
 reverb_wet = PresetModList(
-    base_param_name="Reverb Wet",
-    param_idx=60,
+    sound_attribute="reverb_wet",
+    param_idx=60,  # `Reverb Wet`
     # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
     extra_params=((46, 1.0), (48, 1.0)),
-    presets=[
+    preset_mods=[
         PresetMod(  # reverb_wet_0
             preset="BS Mixmiddle FN",
             interval=(0.0, 1.0),
@@ -956,7 +960,7 @@ reverb_wet = PresetModList(
             interval=(0.0, 1.0),
         ),
         PresetMod(  # reverb_wet_6
-            preset="CD Chordionator IV FN",
+            preset="CH Chordionator IV FN",
             interval=(0.0, 1.0),
         ),
         PresetMod(  # reverb_wet_7
