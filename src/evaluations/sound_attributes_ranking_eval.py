@@ -43,17 +43,18 @@ def sound_attributes_ranking_eval(
     """
     Sound attributes ranking evaluation, used to evaluate the ability of a model to order sounds
     subject to monotonic changes of parameter values corresponding to different sound attributes.
-    Given a dataset composed K groups, in which a single parameter is monotonically increased in order to
-    modify a given sound attribute, the evaluation can be described as follows:
+    Given a dataset composed K groups, each composed of N presets. For each group, a single parameter
+    is monotonically increased (or decreased) in order to modify a given sound attribute.
+    For each sound attribute, the evaluation can be described as follows:
     - (1): get the representation of each sound from a given `encoder` and a reduction function `reduce_fn`
-    - (2): compute the distance matrix of each group using pairwise `distance_fn` (must be the name of a
+    - (2): compute the distance matrix for each preset using pairwise `distance_fn` (must be the name of a
     torchmetrics.functional function)
     - (3): sort the sounds by ascending order of distance to the sound with the lowest parameter value
-    for each group (lowest rank)
+    for each preset (lowest rank)
     - (4): sort the sounds by ascending order of distance to the sound with the highest parameter value
-    for each group (highest rank)
-    - (5): compute the Spearman's rank correlation coefficients for the ranking obtained in (3) and (4) for each group
-    and take the mean.
+    for each preset (highest rank)
+    - (5): compute the Spearman's rank correlation coefficients for the ranking obtained in (3) and (4)
+    for each preset and take the mean.
 
     Args
     - `path_to_dataset` (Union[Path, str]): The path to the dataset containing the sound attributes dataset.
@@ -76,15 +77,27 @@ def sound_attributes_ranking_eval(
     corrcoeffs = {}
 
     for attribute in available_atributes:
-        corrcoeff_up, corrcoeff_down = _compute_corrcoeff_for_attribute(
-            path_to_dataset, attribute, encoder, distance_fn, reduce_fn
-        )
+        presets = sorted([p.stem for p in (path_to_dataset / attribute).iterdir()])
+        if ".DS_Store" in presets:
+            presets.remove(".DS_Store")
+
+        corrcoeff_up = np.zeros(len(presets))
+        corrcoeff_down = np.zeros(len(presets))
+
+        for i, preset in enumerate(presets):
+            path_to_audio = path_to_dataset / attribute / str(preset)
+
+            corrcoeff_up[i], corrcoeff_down[i] = _compute_corrcoeff_for_preset(
+                path_to_audio, encoder, distance_fn, reduce_fn
+            )
+
+        corrcoeff_up = corrcoeff_up.mean()
+        corrcoeff_down = corrcoeff_down.mean()
+
         corrcoeffs[attribute] = (corrcoeff_up + corrcoeff_down) / 2
+
         log.info(
-            f"Correlation coefficient for attribute `{attribute}`: \n"
-            f"from first: {corrcoeff_up}\n"
-            f"from last: {corrcoeff_down}\n"
-            f"mean: {corrcoeffs[attribute]}"
+            f"Mean Spearmann correlation coefficient for attribute `{attribute}`: {corrcoeffs[attribute]}"
         )
 
     # compute the median correlation coefficient
@@ -94,16 +107,15 @@ def sound_attributes_ranking_eval(
     return corrcoeffs
 
 
-def _compute_corrcoeff_for_attribute(
-    path_to_dataset: Union[Path, str],
-    attribute: str,
+def _compute_corrcoeff_for_preset(
+    path_to_audio: Union[Path, str],
     encoder: nn.Module,
     distance_fn: str,
     reduce_fn: str,
 ) -> Tuple[float, float]:
-    dataset = SoundAttributesDataset(root=path_to_dataset, sound_attribute=attribute)
+    dataset = SoundAttributesDataset(path_to_audio=path_to_audio)
 
-    embeddings, (groups, ranks) = compute_embeddings(
+    embeddings, ranks = compute_embeddings(
         encoder=encoder,
         dataloader=DataLoader(dataset, batch_size=len(dataset), shuffle=False),
         num_samples=-1,
@@ -114,43 +126,25 @@ def _compute_corrcoeff_for_attribute(
         pbar=False,
     )
 
-    group_dict = {}
-    for i, group in enumerate(groups):
-        group_key = group.item()
-        if group_key not in group_dict.keys():
-            group_dict[group_key] = {"embeddings": [], "rank": []}
-        group_dict[group_key]["embeddings"].append(embeddings[i])
-        group_dict[group_key]["rank"].append(ranks[i])
+    embeddings = getattr(r_fn, reduce_fn)(embeddings)
 
-    corrcoeff_up = torch.empty(len(group_dict))
-    corrcoeff_down = torch.empty(len(group_dict))
+    distance_matrix = getattr(tm_functional, distance_fn)(embeddings)
 
-    for i, group in group_dict.items():
-        embeddings_from_group = torch.stack(group["embeddings"], dim=0)
-        ranks_from_group = torch.tensor(group["rank"]).float()
+    indices = torch.argsort(
+        distance_matrix,
+        dim=1,
+        descending=distance_fn == "pairwise_cosine_similarity",
+    )
 
-        embeddings_from_group = getattr(r_fn, reduce_fn)(embeddings_from_group)
+    ranking_target = torch.tensor(ranks[1:]).float().to(DEVICE)
 
-        distance_matrix = getattr(tm_functional, distance_fn)(embeddings_from_group)
+    corrcoeff_up = pearson_corrcoef(
+        preds=indices[0, 1:].float(), target=ranking_target
+    ).item()
 
-        indices = torch.argsort(
-            distance_matrix,
-            dim=1,
-            descending=distance_fn == "pairwise_cosine_similarity",
-        )
-
-        ranking_target = ranks_from_group[1:].clone().detach().to(DEVICE)
-
-        corrcoeff_up[i] = pearson_corrcoef(
-            preds=indices[0, 1:].float(), target=ranking_target
-        ).item()
-
-        corrcoeff_down[i] = pearson_corrcoef(
-            preds=indices[-1, 1:].float(), target=ranking_target.flip(0) - 1
-        ).item()
-
-    corrcoeff_up = corrcoeff_up.mean()
-    corrcoeff_down = corrcoeff_down.mean()
+    corrcoeff_down = pearson_corrcoef(
+        preds=indices[-1, 1:].float(), target=ranking_target.flip(0) - 1
+    ).item()
 
     return corrcoeff_up, corrcoeff_down
 
@@ -167,7 +161,7 @@ if __name__ == "__main__":
     PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT"))
     PATH_TO_CKPT = PROJECT_ROOT / "checkpoints"
     PATH_TO_DATASET = (
-        PROJECT_ROOT / "data/TAL-NoiseMaker/sound_attributes_ranking_dataset"
+        PROJECT_ROOT / "data" / "TAL-NoiseMaker" / "sound_attributes_ranking_dataset"
     )
 
     DISTANCE_FN = "pairwise_manhattan_distance"
