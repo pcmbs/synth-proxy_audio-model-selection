@@ -747,7 +747,7 @@ lfo_rate_on_filter = PresetModList(
         ),
         PresetMod(  # lfo_rate_on_filter_5
             preset="BS Tripple Wobbler TAL",
-            param_idx=30,  # `Lfo 1 Amount`
+            param_idx=28,  # `Lfo 1 Rate`
             interval=(0.33, 0.6),
             # set `Lfo 1 Sync` to 0.0
             extra_params=((45, 0.0),),
@@ -800,9 +800,9 @@ lfo_rate_on_pitch = PresetModList(
             preset="BS Jelly Mountain AS",
             interval=(0.2, 0.6),
             # set `Osc 3 Volume` to 0.0
-            # set `Lfo 2 Destination` to 1.0 (Osc1 & 2)
             # set `Lfo 2 Amount` to 0.7
-            extra_params=((17, 0.0), (33, 1.0), (31, 0.45)),
+            # set `Lfo 2 Destination` to 1.0 (Osc1 & 2)
+            extra_params=((17, 0.0), (31, 0.75), (33, 1.0)),
         ),
         PresetMod(  # lfo_rate_on_pitch_2
             preset="BS Mong AS",
@@ -859,7 +859,7 @@ lfo_rate_on_pitch = PresetModList(
         ),
         PresetMod(  # lfo_rate_on_pitch_9
             preset="KB Ghostly Glomp AS",
-            interval=(0.55, 1.0),
+            interval=(0.2, 0.6),
             # set `Osc 3 Volume` to 0.5
             # set `Lfo 2 Amount` to 0.25
             extra_params=((17, 1.0), (31, 0.25)),
@@ -942,6 +942,8 @@ reverb_wet = PresetModList(
         PresetMod(  # reverb_wet_1
             preset="ARP 303 Like II FN",
             interval=(0.0, 1.0),
+            # set `Reverb Decay` to 0.3
+            extra_params=((61, 0.3),),
         ),
         PresetMod(  # reverb_wet_2
             preset="ARP C64 III FN",
@@ -962,6 +964,8 @@ reverb_wet = PresetModList(
         PresetMod(  # reverb_wet_6
             preset="CH Chordionator IV FN",
             interval=(0.0, 1.0),
+            # set `Reverb Decay` to 0.5
+            extra_params=((61, 0.5),),
         ),
         PresetMod(  # reverb_wet_7
             preset="DR Kick II FN",
@@ -974,6 +978,8 @@ reverb_wet = PresetModList(
         PresetMod(  # reverb_wet_9
             preset="LD Bon Voyage FN",
             interval=(0.0, 1.0),
+            # set `Reverb Decay` to 0.3
+            extra_params=((61, 0.3),),
         ),
     ],
 )

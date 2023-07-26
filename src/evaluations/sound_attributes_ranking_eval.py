@@ -23,7 +23,9 @@ if __name__ == "__main__":
 
     sys.path.insert(1, str(Path(__file__).parents[1]))
 
-from data.tal_noisemaker.noisemaker_dataset import SoundAttributesDataset
+from data.tal_noisemaker.sound_attributes_ranking_dataset import (
+    SoundAttributesRankingDataset,
+)
 from utils.embeddings import compute_embeddings
 from utils import reduce_fn as r_fn
 
@@ -113,7 +115,7 @@ def _compute_corrcoeff_for_preset(
     distance_fn: str,
     reduce_fn: str,
 ) -> Tuple[float, float]:
-    dataset = SoundAttributesDataset(path_to_audio=path_to_audio)
+    dataset = SoundAttributesRankingDataset(path_to_audio=path_to_audio)
 
     embeddings, ranks = compute_embeddings(
         encoder=encoder,

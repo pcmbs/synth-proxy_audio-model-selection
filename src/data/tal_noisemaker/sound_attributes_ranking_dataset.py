@@ -1,6 +1,6 @@
 # pylint: disable=E1101:no-member
 """
-Torch Dataset class for the TAL-Noisemaker sound attributes dataset.
+Torch Dataset class for the sound attributes ranking evaluation.
 """
 from pathlib import Path
 from typing import Union
@@ -8,10 +8,12 @@ import torch
 import torchaudio
 from torch.utils.data import Dataset
 
+torchaudio.set_audio_backend("soundfile")
 
-class SoundAttributesDataset(Dataset):
+
+class SoundAttributesRankingDataset(Dataset):
     """
-    Torch Dataset class for the TAL-Noisemaker sound attributes dataset.
+    Torch data set for the sound attributes ranking evaluation.
     """
 
     def __init__(
@@ -36,15 +38,20 @@ class SoundAttributesDataset(Dataset):
         with open(self._path_to_audio / f"{self._file_stems[0]}.wav", "rb") as f:
             tmp_audio, self._sample_rate = torchaudio.load(f)
 
-        self._audio_length = tmp_audio.shape[1] // self._sample_rate
+        self._channels = tmp_audio.shape[0]
+        self._audio_length_sec = tmp_audio.shape[1] // self._sample_rate
 
     @property
     def sample_rate(self):
         return self._sample_rate
 
     @property
-    def audio_length(self):
-        return self._audio_length
+    def audio_length_sec(self):
+        return self._audio_length_sec
+
+    @property
+    def channels(self):
+        return self._channels
 
     @property
     def path_to_audio(self):

@@ -1,4 +1,4 @@
-from .noisemaker_dataset import SoundAttributesDataset
+from .sound_attributes_ranking_dataset import SoundAttributesRankingDataset
 from . import noisemaker_preset_mods
 
 # from .parameter_variations import (
