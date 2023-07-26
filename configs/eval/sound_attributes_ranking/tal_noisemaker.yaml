@@ -1,4 +1,4 @@
-root: ${paths.data_dir}/TAL-NoiseMaker/noisemaker_sound_attributes_dataset
+root: ${paths.data_dir}/TAL-NoiseMaker/sound_attributes_ranking_dataset
 
 # available_variations:
 #   - amp_attack
