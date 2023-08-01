@@ -10,7 +10,7 @@ defaults:
   - wandb: default
 
   # model to evaluate
-  - model: openl3_mel256_music_6144 #encodec48khz
+  - model: openl3 #encodec48khz
   
   # evaluation to perform
   - eval/nearest_neighbors: null # default # pass null to omit

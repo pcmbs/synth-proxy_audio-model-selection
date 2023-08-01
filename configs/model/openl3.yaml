@@ -1,8 +1,8 @@
 encoder: 
   _target_: models.openl3.torchopenl3_wrapper.TorchOpenL3Wrapper
-  input_repr: ??? # \in {linear, mel128, mel256}
-  content_type: ??? # \in {music, env}
-  embedding_size: ??? # \in {512, 6144}
+  input_repr: mel256 # \in {linear, mel128, mel256}
+  content_type: music # \in {music, env}
+  embedding_size: 6144 # \in {512, 6144}
   hop_size: 1.0
   center: false
 
