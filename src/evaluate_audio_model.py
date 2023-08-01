@@ -65,11 +65,11 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
         log.info("Instantiating wandb logger")
         logger = wandb.init(**cfg.wandb)
 
-    # print torchinfo model summary
-    torchinfo_summary = summary(
-        encoder.encoder.model,
-        input_size=(1, encoder.channels, int(encoder.segment_length)),
-    )
+    # # print torchinfo model summary
+    # torchinfo_summary = summary(
+    #     encoder.encoder.model,
+    #     input_size=(1, encoder.channels, int(encoder.segment_length)),
+    # )
 
     #################### evaluations
 
