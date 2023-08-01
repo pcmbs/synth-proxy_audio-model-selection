@@ -10,7 +10,7 @@ defaults:
   - wandb: default
 
   # model to evaluate
-  - model: encodec48khz
+  - model: openl3_mel256_music_6144 #encodec48khz
   
   # evaluation to perform
   - eval/nearest_neighbors: null # default # pass null to omit
@@ -37,7 +37,8 @@ seed: 667
 
 # this will be use to set the model`s input frame length 
 # as well as padding/truncating the audio data
-audio_length: 4.0
+# actually not needed
+# audio_length: 4.0
 
 
 # task name, determines output directory path

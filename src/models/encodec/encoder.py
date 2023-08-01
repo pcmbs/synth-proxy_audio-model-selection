@@ -18,12 +18,6 @@ from . import SEANetEncoder
 
 EncodedFrame = tp.Tuple[torch.Tensor, tp.Optional[torch.Tensor]]
 
-# for preset embeddings:
-# • set segment to 2.5 or 3secs and overlap to 0.
-# this should allow to get a single frame embedding for the whole input which should
-# be equivalent to the concatenation of several short frame (without overlap)
-# normalize audio input (using the )
-
 
 class EncodecEncoder(nn.Module):
     """EnCodec model operating on the raw waveform.

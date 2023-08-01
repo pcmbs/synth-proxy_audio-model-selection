@@ -2,6 +2,7 @@
 """
 Audio utils.
 """
+from typing import Optional
 import torch
 from torch.nn.functional import pad
 from torchaudio.functional import resample
@@ -12,7 +13,7 @@ def convert_audio(
     sample_rate: int,
     target_sample_rate: int,
     target_channels: int,
-    target_duration: float,
+    target_duration: Optional[float] = None,
     normalize: bool = False,
     fadeout_duration: float = 0.1,
 ) -> torch.Tensor:
@@ -26,9 +27,10 @@ def convert_audio(
         target_channels (int): The target number of channels to convert the input audio tensor to.
         target_duration (float): The target duration of the output audio tensor in seconds.
         Note that the input audio tensor will be padded or truncated (with a fade out - see below)
-        to the target length if necessary.
-        normalize (bool): Whether to normalize the input audio tensor.
+        to the target length if necessary. Pass None to leave the input audio tensor unchanged. (Default: None)
+        normalize (bool): Whether to normalize the input audio tensor. (Default: False)
         fadeout_duration (float): The duration of the fadeout in seconds. If not specified, defaults to 100ms.
+        (Default: 0.1)
 
     Returns:
         torch.Tensor: The transformed audio tensor of the specified sample rate, number of channels, and duration.
@@ -36,7 +38,11 @@ def convert_audio(
     assert audio.shape[-2] in [1, 2], "Audio must be mono or stereo."
 
     # convert to mono if required
-    audio = audio.mean(-2, keepdim=True) if (target_channels == 1) and (audio.shape[-2] == 2) else audio
+    audio = (
+        audio.mean(-2, keepdim=True)
+        if (target_channels == 1) and (audio.shape[-2] == 2)
+        else audio
+    )
 
     # convert to stereo if required
     if (target_channels == 2) and (audio.shape[-2] == 1):
@@ -46,23 +52,31 @@ def convert_audio(
     if sample_rate != target_sample_rate:
         audio = audio.clone()  # might raise an error without
         audio = resample(audio, sample_rate, target_sample_rate)
-    audio = resample(audio, sample_rate, target_sample_rate)
 
     # truncate to target duration and apply fade out if required
-    target_num_samples = int(target_duration * target_sample_rate)
+    if target_duration is not None:
+        target_num_samples = int(target_duration * target_sample_rate)
 
-    if audio.shape[-1] > target_num_samples:
-        fadeout_num_samples = int(fadeout_duration * target_sample_rate)
-        fadeout = torch.linspace(1, 0, fadeout_num_samples) if fadeout_num_samples > 0 else 1.0
-        audio = audio[..., :target_num_samples]
-        audio[..., -fadeout_num_samples:] *= fadeout
+        if audio.shape[-1] > target_num_samples:
+            fadeout_num_samples = int(fadeout_duration * target_sample_rate)
+            fadeout = (
+                torch.linspace(1, 0, fadeout_num_samples)
+                if fadeout_num_samples > 0
+                else 1.0
+            )
+            audio = audio[..., :target_num_samples]
+            audio[..., -fadeout_num_samples:] *= fadeout
 
-    # zero-pad to target duration if required
-    elif audio.shape[-1] < target_num_samples:
-        audio = pad(audio, (0, target_num_samples - audio.shape[-1]))
+        # zero-pad to target duration if required
+        elif audio.shape[-1] < target_num_samples:
+            audio = pad(audio, (0, target_num_samples - audio.shape[-1]))
 
     # normalize if required
-    audio = (audio / audio.abs().amax((-2, -1), keepdim=True)) * 0.99 if normalize else audio
+    audio = (
+        (audio / audio.abs().amax((-2, -1), keepdim=True)) * 0.99
+        if normalize
+        else audio
+    )
 
     return audio
 
