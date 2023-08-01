@@ -47,6 +47,9 @@ def log_hyperparameters(
     ##### Model related hparams
     hparams["model/name"] = cfg.model.get("name")
     hparams["model/input_repr"] = cfg.model.get("input_repr")
+    if cfg.model.encoder.get("hop_size"):
+        hparams["model/hop_size"] = cfg.model.encoder.hop_size
+
     # hparams["model/num_params"] = sum(p.numel() for p in encoder.parameters())
     # hparams["model/total_mult_adds"] = torchinfo_summary.total_mult_adds
     # hparams["model/params_size_MB"] = ModelStatistics.to_megabytes(
