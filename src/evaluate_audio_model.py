@@ -107,7 +107,7 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
             cfg=cfg,
             corrcoefs=corrcoefs if cfg.eval.get("sound_attributes_ranking") else None,
             encoder=encoder,
-            torchinfo_summary=torchinfo_summary,
+            # torchinfo_summary=torchinfo_summary,
         )
         wandb.finish()  # required for hydra multirun
 
