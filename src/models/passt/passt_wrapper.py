@@ -9,11 +9,8 @@ https://github.com/kkoutini/passt_hear21/tree/main
 import torch
 from torch import nn
 
-# pylint: disable=E0401
-from hear21passt.base import (
-    get_timestamp_embeddings,
-    get_basic_model,
-)
+# dot from relative import needs to be removed when running as main
+from .hear21passt.base import get_timestamp_embeddings, get_basic_model
 
 # We use mono audio with a sampling rate of 32 kHz.
 # We extract Mel features from a window of 25 ms with a hop length of 10 ms, resulting in 128 mel band
@@ -43,6 +40,8 @@ class PasstWrapper(nn.Module):
         "logits" (classification head's logits only, embedding size = 527), "all" (concatenation of both, embedding size = 1295).
         """
         super().__init__()
+        self.arch = arch
+        self.mode = mode
         self.model = get_basic_model(arch=arch, mode=mode)
 
     @property
@@ -58,6 +57,10 @@ class PasstWrapper(nn.Module):
     def channels(self) -> int:
         return 1
 
+    @property
+    def name(self) -> str:
+        return self.arch
+
     def forward(self, audio: torch.Tensor) -> torch.Tensor:
         """
         Forward pass.
@@ -67,8 +70,8 @@ class PasstWrapper(nn.Module):
         return embeddings.swapdims_(-1, -2)  # swap time and channel dims
 
 
-if __name__ == "__main__":
-    encoder = PasstWrapper(arch="passt_l_kd_p16_128_ap47", mode="all")
-    audio = torch.empty((1, 32_000 * 4)).uniform_(-1, 1)
-    embeddings = encoder(audio)
-    print(f"timestamp embeddings shape: {embeddings.shape}")
+# if __name__ == "__main__":
+#     encoder = PasstWrapper(arch="passt_l_kd_p16_128_ap47", mode="all")
+#     audio = torch.empty((1, 32_000 * 4)).uniform_(-1, 1)
+#     embeddings = encoder(audio)
+#     print(f"timestamp embeddings shape: {embeddings.shape}")

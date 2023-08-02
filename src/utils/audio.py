@@ -21,7 +21,7 @@ def convert_audio(
     Converts an audio tensor to the desired sample rate, number of channels, and duration using various transformations.
 
     Args:
-        audio (torch.Tensor): The input audio tensor.
+        audio (torch.Tensor): The input audio tensor of shape (n_sounds, n_channels, n_samples).
         sample_rate (int): The sample rate of the input audio tensor.
         target_sample_rate (int): The target sample rate to convert the input audio tensor to.
         target_channels (int): The target number of channels to convert the input audio tensor to.

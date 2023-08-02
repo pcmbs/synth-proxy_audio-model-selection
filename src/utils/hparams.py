@@ -47,6 +47,10 @@ def log_hyperparameters(
 
     hparams["model/num_params"] = sum(p.numel() for p in encoder.parameters())
 
+    # for passt model mode selection, delete once mode selected
+    if cfg.model.encoder.get("mode"):
+        hparams["model/mode"] = cfg.model.encoder.mode
+
     # get embedding size for one second of audio
     one_second_input = torch.rand(
         (1, encoder.channels, encoder.sample_rate), device=DEVICE

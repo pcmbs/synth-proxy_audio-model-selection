@@ -154,8 +154,11 @@ def _compute_corrcoeff_for_preset(
 if __name__ == "__main__":
     import sys
     import os
-    from models.encodec.encoder import EncodecEncoder
-    from models.openl3.torchopenl3_wrapper import TorchOpenL3Wrapper
+
+    from models.passt.passt_wrapper import PasstWrapper
+
+    # from models.encodec.encoder import EncodecEncoder
+    # from models.openl3.torchopenl3_wrapper import TorchOpenL3Wrapper
 
     # set torch device
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -171,13 +174,15 @@ if __name__ == "__main__":
 
     REDUC_FN = "global_avg_pool_channel"
 
-    encoder = TorchOpenL3Wrapper(
-        input_repr="mel256",
-        content_type="music",
-        embedding_size=6144,
-        hop_size=1.0,
-        center=False,
-    )
+    encoder = PasstWrapper(arch="passt_l_kd_p16_128_ap47", mode="embed_only")
+
+    # encoder = TorchOpenL3Wrapper(
+    #     input_repr="mel256",
+    #     content_type="music",
+    #     embedding_size=6144,
+    #     hop_size=1.0,
+    #     center=False,
+    # )
     # encoder = EncodecEncoder.encodec_model_48khz(
     #     repository=PATH_TO_CKPT, segment=None, overlap=0.0
     # )
