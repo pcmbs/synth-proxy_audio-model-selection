@@ -6,11 +6,16 @@ Efficient Training of Audio Transformers with Patchout (Koutini et al, 2022)
 based on the stripped down version of the PaSST repo available at
 https://github.com/kkoutini/passt_hear21/tree/main
 """
+import os
+from dotenv import load_dotenv
 import torch
 from torch import nn
 
 # dot from relative import needs to be removed when running as main
 from .hear21passt.base import get_timestamp_embeddings, get_basic_model
+
+load_dotenv()  # take environment variables from .env for checkpoints folder
+torch.hub.set_dir(os.environ["PROJECT_ROOT"])  # path to download/load checkpoints
 
 # We use mono audio with a sampling rate of 32 kHz.
 # We extract Mel features from a window of 25 ms with a hop length of 10 ms, resulting in 128 mel band

@@ -136,7 +136,7 @@ def _compute_corrcoeff_for_preset(
         distance_matrix,
         dim=1,
         descending=distance_fn == "pairwise_cosine_similarity",
-    )
+    ).to(DEVICE)
 
     ranking_target = torch.tensor(ranks[1:]).float().to(DEVICE)
 
