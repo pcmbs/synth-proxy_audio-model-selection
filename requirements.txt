@@ -11,7 +11,7 @@ rich
 soundfile
 torch
 torchaudio
-torchinfo
 torchmetrics
+torchopenl3
 tqdm
 wandb
