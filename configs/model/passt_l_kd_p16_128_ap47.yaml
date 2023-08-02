@@ -1,0 +1,7 @@
+encoder: 
+  _target_: models.passt.passt_wrapper.PasstWrapper
+  arch: passt_l_kd_p16_128_ap47
+  mode: all 
+
+name: passt_l_kd_p16_128_ap47
+group: passt
