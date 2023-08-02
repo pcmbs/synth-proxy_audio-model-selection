@@ -65,3 +65,34 @@ class TorchOpenL3Wrapper(nn.Module):
         embeddings, _ = self.encoder(audio=x, sr=sample_rate)
         embeddings.swapdims_(-1, -2)  # swap time and channel dims
         return embeddings
+
+
+# audio requirements:
+# - sr= 48_000
+# - num_channels = 1
+
+# remarks:
+# - has a frame length of 1 seconds (set hop-size to 1.0 to avoid redundancy and not skip samples)
+# - the center argument allows to set the center of the first window to the beginning of the
+#   signal (“zero centered”), and the returned timestamps correspond to the center of each window
+#   -> set to False
+
+##### feature maps sizes:
+# x: torch.Size([4, 1, 256, 199])
+# conv2d_1: torch.Size([4, 64, 256, 199])
+# conv2d_2: torch.Size([4, 64, 256, 199])
+# max_pooling2d_1: torch.Size([4, 64, 128, 99])
+# conv2d_3: torch.Size([4, 128, 128, 99])
+# conv2d_4: torch.Size([4, 128, 128, 99])
+# max_pooling2d_2: torch.Size([4, 128, 64, 49])
+# conv2d_5: torch.Size([4, 256, 64, 49])
+# conv2d_6: torch.Size([4, 256, 64, 49])
+# max_pooling2d_3: torch.Size([4, 256, 32, 24])
+# conv2d_7: torch.Size([4, 512, 32, 24])
+# audio_embedding_layer: torch.Size([4, 512, 32, 24])
+# max_pooling2d_4: torch.Size([4, 512, 4, 3])
+# flatten: torch.Size([4, 6144])
+
+# stem: input-> BN
+# block (x3): conv2D->BN->RelU->conv2D->BN->RelU->maxpool2D
+# conv2D->BN->RelU->conv2D->maxpool2D->flatten
