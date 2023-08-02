@@ -45,6 +45,7 @@ def log_hyperparameters(
     ##### Model related hparams
     hparams["model/name"] = cfg.model.get("name")
     hparams["model/input_repr"] = cfg.model.get("input_repr")
+
     if cfg.model.encoder.get("hop_size"):
         hparams["model/hop_size"] = cfg.model.encoder.hop_size
 
@@ -60,6 +61,7 @@ def log_hyperparameters(
         embedding = encoder(one_second_input)[0]
     else:
         raise NotImplementedError()
+
     wandb.run.summary["model/emb_size_per_sec"] = getattr(reduce_fn, cfg.reduce_fn)(
         embedding.detach()
     ).shape[-1]
