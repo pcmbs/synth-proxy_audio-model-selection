@@ -6,7 +6,6 @@ import torch
 from torch.nn import Module
 from omegaconf import DictConfig
 
-# from torchinfo import ModelStatistics
 import wandb
 from utils import reduce_fn
 
@@ -18,7 +17,6 @@ def log_hyperparameters(
     cfg: DictConfig,
     corrcoefs: Optional[Dict[str, float]],
     encoder: Module,
-    # torchinfo_summary: ModelStatistics,
 ) -> None:
     """
     summary statistics and hparams to log to wandb.
@@ -26,7 +24,7 @@ def log_hyperparameters(
 
     hparams = {}
 
-    ##### General hparams
+    ##### General hparams§
     hparams["general/audio_length"] = cfg.get("audio_length")
     hparams["general/seed"] = cfg.get("seed")
     hparams["general/distance_fn"] = cfg.get("distance_fn")
@@ -50,14 +48,8 @@ def log_hyperparameters(
     if cfg.model.encoder.get("hop_size"):
         hparams["model/hop_size"] = cfg.model.encoder.hop_size
 
-    # hparams["model/num_params"] = sum(p.numel() for p in encoder.parameters())
-    # hparams["model/total_mult_adds"] = torchinfo_summary.total_mult_adds
-    # hparams["model/params_size_MB"] = ModelStatistics.to_megabytes(
-    #     torchinfo_summary.total_param_bytes
-    # )
-    # hparams["model/forbackward_size_MB"] = ModelStatistics.to_megabytes(
-    #     torchinfo_summary.total_output_bytes
-    # )
+    hparams["model/num_params"] = sum(p.numel() for p in encoder.parameters())
+
     # get embedding size for one second of audio
     one_second_input = torch.rand(
         (1, encoder.channels, encoder.sample_rate), device=DEVICE

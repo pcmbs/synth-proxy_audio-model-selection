@@ -169,7 +169,7 @@ if __name__ == "__main__":
 
     DISTANCE_FN = "pairwise_manhattan_distance"
 
-    REDUC_FN = "flatten"
+    REDUC_FN = "global_avg_pool_channel"
 
     encoder = TorchOpenL3Wrapper(
         input_repr="mel256",

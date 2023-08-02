@@ -17,7 +17,6 @@ from dotenv import load_dotenv
 from lightning import seed_everything
 from omegaconf import DictConfig
 from torch.nn import Module
-from torchinfo import summary
 
 from evaluations import nearest_neighbors_eval, sound_attributes_ranking_eval
 from utils.hparams import log_hyperparameters
@@ -64,12 +63,6 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
     if cfg.get("wandb"):
         log.info("Instantiating wandb logger")
         logger = wandb.init(**cfg.wandb)
-
-    # # print torchinfo model summary
-    # torchinfo_summary = summary(
-    #     encoder.encoder.model,
-    #     input_size=(1, encoder.channels, int(encoder.segment_length)),
-    # )
 
     #################### evaluations
 
