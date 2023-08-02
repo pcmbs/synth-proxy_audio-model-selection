@@ -61,8 +61,8 @@ class TorchOpenL3Wrapper(nn.Module):
     def name(self) -> str:
         return f"openl3_{self.input_repr}_{self.content_type}_{self.embedding_size}"
 
-    def forward(self, x: torch.Tensor, sample_rate: int) -> torch.Tensor:
-        embeddings, _ = self.encoder(audio=x, sr=sample_rate)
+    def forward(self, audio: torch.Tensor, sample_rate: int) -> torch.Tensor:
+        embeddings, _ = self.encoder(audio=audio, sr=sample_rate)
         embeddings.swapdims_(-1, -2)  # swap time and channel dims
         return embeddings
 
