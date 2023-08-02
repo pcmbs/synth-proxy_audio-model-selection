@@ -5,4 +5,4 @@ encoder:
   overlap: 0.0
 
 name: "encodec_48khz"
-
+group: "encodec"

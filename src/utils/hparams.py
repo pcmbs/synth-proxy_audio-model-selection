@@ -25,7 +25,7 @@ def log_hyperparameters(
     hparams = {}
 
     ##### General hparams§
-    hparams["general/audio_length"] = cfg.get("audio_length")
+    # hparams["general/audio_length"] = cfg.get("audio_length")
     hparams["general/seed"] = cfg.get("seed")
     hparams["general/distance_fn"] = cfg.get("distance_fn")
     hparams["general/reduce_fn"] = cfg.get("reduce_fn")
@@ -44,10 +44,6 @@ def log_hyperparameters(
 
     ##### Model related hparams
     hparams["model/name"] = cfg.model.get("name")
-    hparams["model/input_repr"] = cfg.model.get("input_repr")
-
-    if cfg.model.encoder.get("hop_size"):
-        hparams["model/hop_size"] = cfg.model.encoder.hop_size
 
     hparams["model/num_params"] = sum(p.numel() for p in encoder.parameters())
 

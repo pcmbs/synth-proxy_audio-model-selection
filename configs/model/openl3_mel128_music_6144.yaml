@@ -7,4 +7,4 @@ encoder:
   center: false
 
 name: openl3_${.encoder.input_repr}_${.encoder.content_type}_${.encoder.embedding_size}
-input_repr: ${.encoder.input_repr}
+group: openl3
