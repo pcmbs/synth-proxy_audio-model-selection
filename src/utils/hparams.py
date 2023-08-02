@@ -59,6 +59,8 @@ def log_hyperparameters(
         embedding = encoder(one_second_input.swapdims(-1, -2), encoder.sample_rate)
     elif encoder.name.startswith("encodec"):
         embedding = encoder(one_second_input)[0]
+    elif encoder.name.startswith("passt"):
+        embedding = encoder(one_second_input.squeeze(-2))
     else:
         raise NotImplementedError()
 
