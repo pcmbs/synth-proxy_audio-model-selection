@@ -5,5 +5,5 @@ mode: "online"
 id: null # pass correct id to resume experiment!
 anonymous: null # enable anonymous logging
 project: "preset-embedding_audio-model-selection"
-group: ${model.name}
+# group: ${model.name}
 tags: []

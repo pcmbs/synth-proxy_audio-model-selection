@@ -1,8 +1,9 @@
 encoder: 
   _target_: models.encodec.encoder.EncodecEncoder.encodec_model_24khz
   repository: ${paths.ckpt_dir}
-  segment: ${audio_length}
+  # segment: ${audio_length}
   overlap: 0.0
 
 name: "encodec_24khz"
+group: "encodec"
 

@@ -5,7 +5,7 @@ from typing import Dict, Optional
 import torch
 from torch.nn import Module
 from omegaconf import DictConfig
-from torchinfo import ModelStatistics
+
 import wandb
 from utils import reduce_fn
 
@@ -17,7 +17,6 @@ def log_hyperparameters(
     cfg: DictConfig,
     corrcoefs: Optional[Dict[str, float]],
     encoder: Module,
-    torchinfo_summary: ModelStatistics,
 ) -> None:
     """
     summary statistics and hparams to log to wandb.
@@ -25,8 +24,8 @@ def log_hyperparameters(
 
     hparams = {}
 
-    ##### General hparams
-    hparams["general/audio_length"] = cfg.get("audio_length")
+    ##### General hparams§
+    # hparams["general/audio_length"] = cfg.get("audio_length")
     hparams["general/seed"] = cfg.get("seed")
     hparams["general/distance_fn"] = cfg.get("distance_fn")
     hparams["general/reduce_fn"] = cfg.get("reduce_fn")
@@ -45,20 +44,22 @@ def log_hyperparameters(
 
     ##### Model related hparams
     hparams["model/name"] = cfg.model.get("name")
+
     hparams["model/num_params"] = sum(p.numel() for p in encoder.parameters())
-    hparams["model/total_mult_adds"] = torchinfo_summary.total_mult_adds
-    hparams["model/params_size_MB"] = ModelStatistics.to_megabytes(
-        torchinfo_summary.total_param_bytes
-    )
-    hparams["model/forbackward_size_MB"] = ModelStatistics.to_megabytes(
-        torchinfo_summary.total_output_bytes
-    )
+
     # get embedding size for one second of audio
     one_second_input = torch.rand(
         (1, encoder.channels, encoder.sample_rate), device=DEVICE
     )
+    if encoder.name.startswith("openl3"):
+        embedding = encoder(one_second_input.swapdims(-1, -2), encoder.sample_rate)
+    elif encoder.name.startswith("encodec"):
+        embedding = encoder(one_second_input)[0]
+    else:
+        raise NotImplementedError()
+
     wandb.run.summary["model/emb_size_per_sec"] = getattr(reduce_fn, cfg.reduce_fn)(
-        encoder(one_second_input)[0]
+        embedding.detach()
     ).shape[-1]
 
     ##### Save hparams and hydra config
