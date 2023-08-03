@@ -12,7 +12,8 @@ import torch
 from torch import nn
 
 # dot from relative import needs to be removed when running as main
-from .hear21passt.base import get_timestamp_embeddings, get_basic_model
+# from .hear21passt.base import get_timestamp_embeddings, get_basic_model
+from . import base
 
 load_dotenv()  # take environment variables from .env for checkpoints folder
 torch.hub.set_dir(os.environ["PROJECT_ROOT"])  # path to download/load checkpoints
@@ -47,7 +48,7 @@ class PasstWrapper(nn.Module):
         super().__init__()
         self.arch = arch
         self.mode = mode
-        self.model = get_basic_model(arch=arch, mode=mode)
+        self.model = base.get_basic_model(arch=arch, mode=mode)
 
     @property
     def segment(self) -> None:
@@ -69,9 +70,11 @@ class PasstWrapper(nn.Module):
     def forward(self, audio: torch.Tensor) -> torch.Tensor:
         """
         Forward pass.
-        audio (torch.Tensor): mono input sounds @32khz of shape n_sounds x n_samples in the range [-1, 1]
+        audio (torch.Tensor): mono input sounds @32khz of shape (n_sounds, n_channels=1, n_samples) in the range [-1, 1]
         """
-        embeddings, _ = get_timestamp_embeddings(audio, self.model)
+        # passt requires mono input audio of shape (n_sounds, n_samples)
+        audio = audio.squeeze(-2)
+        embeddings, _ = base.get_timestamp_embeddings(audio, self.model)
         return embeddings.swapdims_(-1, -2)  # swap time and channel dims
 
 
