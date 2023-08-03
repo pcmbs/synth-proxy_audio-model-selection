@@ -136,7 +136,7 @@ def _compute_corrcoeff_for_preset(
         distance_matrix,
         dim=1,
         descending=distance_fn == "pairwise_cosine_similarity",
-    )
+    ).to(DEVICE)
 
     ranking_target = torch.tensor(ranks[1:]).float().to(DEVICE)
 
@@ -151,38 +151,69 @@ def _compute_corrcoeff_for_preset(
     return corrcoeff_up, corrcoeff_down
 
 
-if __name__ == "__main__":
-    import sys
-    import os
-    from models.encodec.encoder import EncodecEncoder
-    from models.openl3.torchopenl3_wrapper import TorchOpenL3Wrapper
+# if __name__ == "__main__":
+#     import sys
+#     import os
 
-    # set torch device
-    DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+#     from models.passt.passt_wrapper import PasstWrapper
 
-    ###### to move in hydra config
-    PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT"))
-    PATH_TO_CKPT = PROJECT_ROOT / "checkpoints"
-    PATH_TO_DATASET = (
-        PROJECT_ROOT / "data" / "TAL-NoiseMaker" / "sound_attributes_ranking_dataset"
-    )
+#     # from models.encodec.encoder import EncodecEncoder
+#     # from models.openl3.torchopenl3_wrapper import TorchOpenL3Wrapper
 
-    DISTANCE_FN = "pairwise_manhattan_distance"
+#     # set torch device
+#     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-    REDUC_FN = "global_avg_pool_channel"
+#     ###### to move in hydra config
+#     PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT"))
+#     PATH_TO_CKPT = PROJECT_ROOT / "checkpoints"
+#     PATH_TO_DATASET = (
+#         PROJECT_ROOT / "data" / "TAL-NoiseMaker" / "sound_attributes_ranking_dataset"
+#     )
 
-    encoder = TorchOpenL3Wrapper(
-        input_repr="mel256",
-        content_type="music",
-        embedding_size=6144,
-        hop_size=1.0,
-        center=False,
-    )
-    # encoder = EncodecEncoder.encodec_model_48khz(
-    #     repository=PATH_TO_CKPT, segment=None, overlap=0.0
-    # )
+#     DISTANCE_FN = "pairwise_manhattan_distance"
 
-    corrcoeff = sound_attributes_ranking_eval(
-        PATH_TO_DATASET, encoder, DISTANCE_FN, REDUC_FN
-    )
-    print("breakpoint me!")
+#     REDUC_FN = "global_avg_pool_channel"
+
+#     encoder = PasstWrapper(arch="passt_l_kd_p16_128_ap47", mode="embed_only")
+
+#     # encoder = TorchOpenL3Wrapper(
+#     #     input_repr="mel256",
+#     #     content_type="music",
+#     #     embedding_size=6144,
+#     #     hop_size=1.0,
+#     #     center=False,
+#     # )
+#     # encoder = EncodecEncoder.encodec_model_48khz(
+#     #     repository=PATH_TO_CKPT, segment=None, overlap=0.0
+#     # )
+
+#     corrcoeff = sound_attributes_ranking_eval(
+#         PATH_TO_DATASET, encoder, DISTANCE_FN, REDUC_FN
+#     )
+#     print("breakpoint me!")
+
+# if __name__ == "__main__":
+#     import os
+#     from models.encodec.encodec_wrapper import EncodecWrapper
+
+#     encoder = EncodecWrapper(
+#         model="24khz", repository=Path(os.environ["PROJECT_ROOT"]) / "checkpoints"
+#     )
+#     audio = torch.empty((10, 1, 24_000 * 4)).uniform_(-1, 1)
+#     embeddings = encoder(audio)
+#     print(f"embeddings shape: {embeddings.shape}")
+
+# if __name__ == "__main__":
+#     from models.openl3.torchopenl3_wrapper import TorchOpenL3Wrapper
+
+#     encoder = TorchOpenL3Wrapper(
+#         input_repr="mel256",
+#         content_type="music",
+#         embedding_size=6144,
+#         hop_size=1.0,
+#         center=False,
+#     )
+
+#     audio = torch.empty((10, 1, 48_000 * 4)).uniform_(-1, 1)
+#     embeddings = encoder(audio)
+#     print(f"embeddings shape: {embeddings.shape}")

@@ -1,0 +1,7 @@
+encoder: 
+  _target_: models.passt.passt_wrapper.PasstWrapper
+  arch: passt_s_kd_p16_128_ap486
+  mode: all 
+
+name: passt_s_kd_p16_128_ap486
+group: passt

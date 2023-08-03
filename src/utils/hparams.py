@@ -44,6 +44,7 @@ def log_hyperparameters(
 
     ##### Model related hparams
     hparams["model/name"] = cfg.model.get("name")
+    hparams["model/group"] = cfg.model.get("group")
 
     hparams["model/num_params"] = sum(p.numel() for p in encoder.parameters())
 
@@ -51,15 +52,9 @@ def log_hyperparameters(
     one_second_input = torch.rand(
         (1, encoder.channels, encoder.sample_rate), device=DEVICE
     )
-    if encoder.name.startswith("openl3"):
-        embedding = encoder(one_second_input.swapdims(-1, -2), encoder.sample_rate)
-    elif encoder.name.startswith("encodec"):
-        embedding = encoder(one_second_input)[0]
-    else:
-        raise NotImplementedError()
 
     wandb.run.summary["model/emb_size_per_sec"] = getattr(reduce_fn, cfg.reduce_fn)(
-        embedding.detach()
+        encoder(one_second_input).detach()
     ).shape[-1]
 
     ##### Save hparams and hydra config
