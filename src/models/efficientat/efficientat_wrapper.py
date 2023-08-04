@@ -12,6 +12,7 @@ http://arxiv.org/abs/2211.04772
 
 """
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 import torch
 from torch import nn
@@ -20,7 +21,8 @@ from . import hear_mn
 
 
 load_dotenv()  # take environment variables from .env for checkpoints folder
-torch.hub.set_dir(os.environ["PROJECT_ROOT"])  # path to download/load checkpoints
+# path to download/load checkpoints
+torch.hub.set_dir(Path(os.environ["PROJECT_ROOT"]) / "checkpoints")
 
 
 # Mono audio is sampled at 32 kHz and STFT is computed using 25 ms windows and a hop size of 10 ms.
