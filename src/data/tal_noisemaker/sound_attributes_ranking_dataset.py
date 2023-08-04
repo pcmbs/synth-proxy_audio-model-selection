@@ -33,7 +33,10 @@ class SoundAttributesRankingDataset(Dataset):
 
         self._path_to_audio = path_to_audio
 
-        self._file_stems = sorted([p.stem for p in self._path_to_audio.glob("*.wav")])
+        self._file_stems = sorted(
+            [p.stem for p in self._path_to_audio.glob("*.wav")],
+            key=lambda i: int(i.split("-")[-1]),
+        )
 
         with open(self._path_to_audio / f"{self._file_stems[0]}.wav", "rb") as f:
             tmp_audio, self._sample_rate = torchaudio.load(f)

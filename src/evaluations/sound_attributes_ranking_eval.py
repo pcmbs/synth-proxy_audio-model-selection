@@ -72,13 +72,13 @@ def sound_attributes_ranking_eval(
         Path(path_to_dataset) if isinstance(path_to_dataset, str) else path_to_dataset
     )
 
-    available_atributes = sorted([p.stem for p in path_to_dataset.iterdir()])
-    if ".DS_Store" in available_atributes:
-        available_atributes.remove(".DS_Store")
+    available_attributes = sorted([p.stem for p in path_to_dataset.iterdir()])
+    if ".DS_Store" in available_attributes:
+        available_attributes.remove(".DS_Store")
 
     corrcoeffs = {}
 
-    for attribute in available_atributes:
+    for attribute in available_attributes:
         presets = sorted([p.stem for p in (path_to_dataset / attribute).iterdir()])
         if ".DS_Store" in presets:
             presets.remove(".DS_Store")
@@ -167,7 +167,7 @@ if __name__ == "__main__":
 
     DISTANCE_FN = "pairwise_manhattan_distance"
 
-    REDUC_FN = "global_avg_pool_channel"
+    REDUC_FN = "global_avg_pool_time"
 
     encoder = EfficientATWrapper()
 
