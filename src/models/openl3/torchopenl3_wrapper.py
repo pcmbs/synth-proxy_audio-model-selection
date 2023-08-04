@@ -1,6 +1,8 @@
 """
 Wrapper class around a torchopenl3 model for integration into the current pipeline.
-torchopenl3 repo: https://github.com/torchopenl3/torchopenl3 
+
+[1] Gyanendra Das, Humair Raj Khan, Joseph Turian (2021). torchopenl3 (version 1.0.1). 
+DOI 10.5281/zenodo.5168808, https://github.com/torchopenl3/torchopenl3.
 """
 import os
 from functools import partial
@@ -31,7 +33,7 @@ class TorchOpenL3Wrapper(nn.Module):
         self.center = center
 
         # load the model
-        base_model = torchopenl3.core.load_audio_embedding_model(
+        self.net = torchopenl3.core.load_audio_embedding_model(
             input_repr=self.input_repr,
             content_type=self.content_type,
             embedding_size=self.embedding_size,
@@ -40,7 +42,7 @@ class TorchOpenL3Wrapper(nn.Module):
         # partial init such that only the audio must be passed in the forward function
         self.encoder = partial(
             torchopenl3.core.get_audio_embedding,
-            model=base_model,
+            model=self.net,
             hop_size=self.hop_size,
             center=self.center,
         )

@@ -1,0 +1,6 @@
+encoder: 
+  _target_: models.efficientat.efficientat_wrapper.EfficientATWrapper
+  model_name: mn20_all_b_mel_avgs
+
+name: ${.encoder.model_name}
+group: mn

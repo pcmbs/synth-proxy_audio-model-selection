@@ -876,52 +876,52 @@ pitch_coarse = PresetModList(
     preset_mods=[
         PresetMod(  # pitch_coarse_0
             preset="default",
-            interval=(0.25, 0.5),
+            interval=(0.0, 1.0),
             # set `Osc 3 Volume` to 0
             extra_params=((17, 0.0),),
         ),
         PresetMod(  # pitch_coarse_1
             preset="default",
-            interval=(0.25, 0.5),
+            interval=(0.0, 1.0),
             # set `Osc 3 Volume` to 0
             # set `Osc 1 Waveform` to 0.5 (square wave)
             extra_params=((17, 0.0), (23, 0.5)),
         ),
         PresetMod(  # pitch_coarse_2
             preset="ARP 303 Like FN",
-            interval=(0.25, 0.5),
+            interval=(0.0, 1.0),
         ),
         PresetMod(  # pitch_coarse_3
             preset="ARP Super Sync TAL",
-            interval=(0.25, 0.5),
+            interval=(0.0, 1.0),
         ),
         PresetMod(  # pitch_coarse_4
             preset="BS Clean Flat Bass TAL",
-            interval=(0.25, 0.5),
+            interval=(0.0, 1.0),
             # set `Osc 3 Volume` to 0
             extra_params=((17, 0.0),),
         ),
         PresetMod(  # pitch_coarse_5
             preset="BS Goodspeed FN",
-            interval=(0.25, 0.5),
+            interval=(0.0, 1.0),
         ),
         PresetMod(  # pitch_coarse_6
             preset="FX Bit Shuffla TAL",
-            interval=(0.25, 0.5),
+            interval=(0.0, 1.0),
         ),
         PresetMod(  # pitch_coarse_7
             preset="FX  Jumper TAL",
-            interval=(0.25, 0.5),
+            interval=(0.0, 1.0),
             # set `Osc 3 Volume` to 0
             extra_params=((17, 0.0),),
         ),
         PresetMod(  # pitch_coarse_8
             preset="LD Analog Down Glider TAL",
-            interval=(0.25, 0.5),
+            interval=(0.0, 1.0),
         ),
         PresetMod(  # pitch_coarse_9
             preset="LD Drop In Pulse TAL",
-            interval=(0.25, 0.5),
+            interval=(0.0, 1.0),
         ),
     ],
 )
