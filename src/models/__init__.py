@@ -1,1 +1,1 @@
-from . import encodec, openl3, passt
+from . import encodec, openl3, passt, efficientat

@@ -1,5 +1,6 @@
 encoder: 
   _target_: models.passt.passt_wrapper.PasstWrapper
+  features: base
   arch: passt_s_kd_p16_128_ap486
   mode: all 
 

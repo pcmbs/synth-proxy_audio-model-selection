@@ -1,6 +1,14 @@
 """
 Wrapper class around the encodec models for integration into the current pipeline.
-encodec repo: https://github.com/facebookresearch/encodec/tree/main 
+
+@article{defossez2022highfi,
+  title={High Fidelity Neural Audio Compression},
+  author={Défossez, Alexandre and Copet, Jade and Synnaeve, Gabriel and Adi, Yossi},
+  journal={arXiv preprint arXiv:2210.13438},
+  year={2022}
+}
+
+Official Repo: https://github.com/facebookresearch/encodec/tree/main 
 """
 from pathlib import Path
 from typing import Optional, Union

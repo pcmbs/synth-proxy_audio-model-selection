@@ -1,6 +1,8 @@
 """
 Wrapper class around a torchopenl3 model for integration into the current pipeline.
-torchopenl3 repo: https://github.com/torchopenl3/torchopenl3 
+
+[1] Gyanendra Das, Humair Raj Khan, Joseph Turian (2021). torchopenl3 (version 1.0.1). 
+DOI 10.5281/zenodo.5168808, https://github.com/torchopenl3/torchopenl3.
 """
 import os
 from functools import partial
