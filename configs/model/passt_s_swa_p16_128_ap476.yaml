@@ -2,7 +2,7 @@ encoder:
   _target_: models.passt.passt_wrapper.PasstWrapper
   features: base
   arch: passt_s_swa_p16_128_ap476
-  mode: all 
+  mode: embed_only
 
 name: ${.encoder.arch}_${.encoder.features}_${.encoder.mode}
 group: passt
