@@ -46,7 +46,11 @@ def log_hyperparameters(
     hparams["model/name"] = cfg.model.get("name")
     hparams["model/group"] = cfg.model.get("group")
 
-    hparams["model/num_params"] = sum(p.numel() for p in encoder.parameters())
+    # condition required for openl3
+    if cfg.model.name.startswith("openl3"):
+        hparams["model/num_params"] = sum(p.numel() for p in encoder.net.parameters())
+    else:
+        hparams["model/num_params"] = sum(p.numel() for p in encoder.parameters())
 
     # get embedding size for one second of audio
     one_second_input = torch.rand(

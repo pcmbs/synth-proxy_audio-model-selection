@@ -67,9 +67,11 @@ class PasstWrapper(nn.Module):
 
         Args
         - `features` (str): determine which features will be concatenated in the final embedding.
+        "base" output from base model, "base2level" concatenation of the output from base model and the output of the same model with
+        timestamp_window * 5base2level model, "base2levelmel" same as base2lvl but also concatenates the flattened mel spectrogram
         - `arch` (str): pretrained model.
         See list at https://github.com/kkoutini/passt_hear21/blob/48610e7baaf913298906fcde0ca3c28d0b8277c7/hear21passt/models/passt.py#L868
-        - `mode` (str): "embed_only" (transformer encoder output only, embedding size = 768),
+        - `mode` (str): determines which embeddings to use. "embed_only" (transformer encoder output only, embedding size = 768),
         "logits" (classification head's logits only, embedding size = 527), "all" (concatenation of both, embedding size = 1295).
         """
         super().__init__()
@@ -89,6 +91,7 @@ class PasstWrapper(nn.Module):
             raise ValueError(
                 "features should be 'base', 'base2level', or 'base2levelmel'"
             )
+        self.features = features
 
     @property
     def segment(self) -> None:
@@ -105,7 +108,7 @@ class PasstWrapper(nn.Module):
 
     @property
     def name(self) -> str:
-        return self.arch
+        return f"{self.arch}_{self.features}_{self.mode}"
 
     def forward(self, audio: torch.Tensor) -> torch.Tensor:
         """

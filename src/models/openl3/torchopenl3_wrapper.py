@@ -33,7 +33,7 @@ class TorchOpenL3Wrapper(nn.Module):
         self.center = center
 
         # load the model
-        base_model = torchopenl3.core.load_audio_embedding_model(
+        self.net = torchopenl3.core.load_audio_embedding_model(
             input_repr=self.input_repr,
             content_type=self.content_type,
             embedding_size=self.embedding_size,
@@ -42,7 +42,7 @@ class TorchOpenL3Wrapper(nn.Module):
         # partial init such that only the audio must be passed in the forward function
         self.encoder = partial(
             torchopenl3.core.get_audio_embedding,
-            model=base_model,
+            model=self.net,
             hop_size=self.hop_size,
             center=self.center,
         )
