@@ -20,3 +20,4 @@ data/TAL-NoiseMaker/sound_attributes_ranking_dataset/
 data/nsynth-lite/
 checkpoints/torchopenl3*
 checkpoints/passt*
+resources/
