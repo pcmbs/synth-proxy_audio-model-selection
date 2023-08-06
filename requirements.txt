@@ -9,7 +9,7 @@ pedalboard
 python-dotenv
 rich
 soundfile
-timm
+timm==0.4.12
 torch
 torchaudio
 torchmetrics

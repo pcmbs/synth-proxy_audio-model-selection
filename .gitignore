@@ -21,3 +21,6 @@ data/nsynth-lite/
 checkpoints/
 !checkpoints/encodec*
 resources/
+
+src/test_model.py
+src/cfg_debug.py
