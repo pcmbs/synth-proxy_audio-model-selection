@@ -74,12 +74,10 @@ class CAVMAEWrapper(nn.Module):
             torch.Tensor: audio embeddings of shape (n_sounds, embed_size=768, num_patches=512)
         """
         # kaldi fbanks can only be computed for a single audio sample at a time
-        fbanks_batch = torch.stack(
-            [self._wav2fbank(sample, self.sample_rate) for sample in audio], dim=0
-        )
+        fbanks_batch = torch.stack([self._wav2fbank(sample) for sample in audio], dim=0)
         return self.audio_model(fbanks_batch).transpose(-1, -2)
 
-    def _wav2fbank(self, audio: torch.Tensor, sample_rate: int) -> torch.Tensor:
+    def _wav2fbank(self, audio: torch.Tensor) -> torch.Tensor:
         # source: https://github.com/YuanGongND/cav-mae/blob/master/src/dataloader.py
         # see line 285 for fbanks normalization and line 164 for _wav2bank definition
 
