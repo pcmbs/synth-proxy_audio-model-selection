@@ -2,5 +2,5 @@ encoder:
   _target_: models.cavmae.cavmae_wrapper.CAVMAEWrapper
   ckpt_name: as_46.6
 
-name: ${.encoder.model_name}
+name: cav-mae_${.encoder.ckpt_name}
 group: cav-mae
