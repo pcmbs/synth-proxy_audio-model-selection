@@ -1,0 +1,6 @@
+encoder: 
+  _target_: models.cavmae.cavmae_wrapper.CAVMAEWrapper
+  ckpt_name: as_37.7
+
+name: ${.encoder.model_name}
+group: cav-mae

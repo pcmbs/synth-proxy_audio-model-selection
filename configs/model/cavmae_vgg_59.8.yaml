@@ -1,0 +1,6 @@
+encoder: 
+  _target_: models.cavmae.cavmae_wrapper.CAVMAEWrapper
+  ckpt_name: vgg_59.8
+
+name: ${.encoder.model_name}
+group: cav-mae

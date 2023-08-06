@@ -1,4 +1,3 @@
-# pylint: disable=E1101
 """
 Wrapper class around PaSST models for integration into the current pipeline.
 
@@ -47,7 +46,7 @@ torch.hub.set_dir(os.environ["PROJECT_ROOT"])  # path to download/load checkpoin
 # "logits" (classification head's logits only, embedding size = 527), "all" (concatenation of both, embedding size = 1295).
 
 # base model: basic model
-# -> output shape for 1 seconds of audio: torch.Size([1, mode_out*2, 21])
+# -> output shape for 1 seconds of audio: torch.Size([1, mode_out, 21])
 # base2lvl: concatenate output from base model and the output of the same model with timestamp_window * 5
 # -> output shape for 1 seconds of audio: torch.Size([1, mode_out*2, 21])
 # base2lvlmel: same as base2lvl but also concatenates the flattened mel spectrogram
@@ -114,17 +113,11 @@ class PasstWrapper(nn.Module):
         """
         Forward pass.
         audio (torch.Tensor): mono input sounds @32khz of shape (n_sounds, n_channels=1, n_samples) in the range [-1, 1]
+
+        Returns:
+            torch.Tensor: audio embeddings of shape (n_sounds, embed_size=768, n_timestamps)
         """
         # passt requires mono input audio of shape (n_sounds, n_samples)
         audio = audio.squeeze(-2)
         embeddings, _ = self._module.get_timestamp_embeddings(audio, self.model)
         return embeddings.swapdims_(-1, -2)  # swap time and channel dims
-
-
-if __name__ == "__main__":
-    encoder = PasstWrapper(
-        features="base2levelmel", arch="passt_l_kd_p16_128_ap47", mode="embed_only"
-    )
-    audio = torch.empty((1, 1, 32_000 * 1)).uniform_(-1, 1)
-    embeddings = encoder(audio)
-    print(f"timestamp embeddings shape: {embeddings.shape}")
