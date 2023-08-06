@@ -1,4 +1,3 @@
-# pylint: disable=E1101
 """
 Wrapper class around EfficientAT [1] models for integration into the current pipeline.
 
