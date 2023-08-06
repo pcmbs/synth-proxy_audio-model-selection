@@ -18,6 +18,6 @@ wandb/
 data/TAL-NoiseMaker/*vst3
 data/TAL-NoiseMaker/sound_attributes_ranking_dataset/
 data/nsynth-lite/
-checkpoints/torchopenl3*
-checkpoints/passt*
+checkpoints/
+!checkpoints/encodec*
 resources/
