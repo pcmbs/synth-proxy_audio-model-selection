@@ -153,23 +153,18 @@ def _compute_corrcoeff_for_preset(
 
 if __name__ == "__main__":
     import os
-    from models.efficientat.efficientat_wrapper import EfficientATWrapper
+    from models.audiomae.audiomae_wrapper import AudioMAEWrapper
 
     # set torch device
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-
-    ###### to move in hydra config
     PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT"))
-    PATH_TO_CKPT = PROJECT_ROOT / "checkpoints"
     PATH_TO_DATASET = (
         PROJECT_ROOT / "data" / "TAL-NoiseMaker" / "sound_attributes_ranking_dataset"
     )
-
     DISTANCE_FN = "pairwise_manhattan_distance"
-
     REDUC_FN = "global_avg_pool_time"
 
-    encoder = EfficientATWrapper()
+    encoder = AudioMAEWrapper(ckpt_name="as-2M_pt+ft")
 
     corrcoeff = sound_attributes_ranking_eval(
         PATH_TO_DATASET, encoder, DISTANCE_FN, REDUC_FN

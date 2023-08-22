@@ -10,6 +10,7 @@ Github Repo: https://github.com/facebookresearch/AudioMAE/tree/main
   year = {2022}
 }
 """
+from collections import OrderedDict
 import os
 from pathlib import Path
 
@@ -19,7 +20,7 @@ import torchaudio
 from dotenv import load_dotenv
 from torch import nn
 
-from . import mae_vit_base_patch16
+from . import mae_vit_base_patch16_encoder_only
 
 load_dotenv()  # take environment variables from .env for checkpoints folder
 # path to download/load checkpoints
@@ -30,6 +31,16 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Adapted from
 # https://github.com/facebookresearch/AudioMAE/blob/main/demo/aud_mae_visualize.ipynb
+# learned positional embedding
+# patch embedding: 2Dconv layer (C_in=1, C_out=768, kernel_size=16, stride=16) (results in 512 patches)ð
+# input shape: (N, 1, 44_100)
+# fbanks shape (after unsqueeze): (N, n_channels=1, target_len=1024, n_mel=128)
+# patch embedding:
+# (n_sounds, 512, num_patches=512, embed_dim=768)
+# contextual_embs:
+# the encoder output is the mean over the 3 last transformer layers' output
+# encoder output shape (after final transpose:
+# (n_sounds, embed_size=768, num_patches=513 (512 patches + 1 cls token))
 
 
 class AudioMAEWrapper(nn.Module):
@@ -57,12 +68,21 @@ class AudioMAEWrapper(nn.Module):
             ckpt_path,
             map_location=DEVICE,
         )
-
+        if ckpt_name == "as-2M_pt+ft":
+            # layer norm params starts with fc_norm instead of norm (probs since models_vit instead of models_mae)
+            checkpoint = OrderedDict(
+                [
+                    (k[3:], v) if k.startswith("fc_norm") else (k, v)
+                    for k, v in checkpoint["model"].items()
+                ]
+            )
+        else:  # ckpt_name == "as-2M_pt"
+            checkpoint = checkpoint["model"]
         # build model
-        self.model = mae_vit_base_patch16(
+        self.model = mae_vit_base_patch16_encoder_only(
             in_chans=1, audio_exp=True, img_size=(1024, 128)
         )
-        miss, _ = self.model.load_state_dict(checkpoint["model"], strict=False)
+        miss, _ = self.model.load_state_dict(checkpoint, strict=False)
         print(f"Missing weights from checkpoint: {miss}")
 
         # stats for mel spectrogram normalization
@@ -91,11 +111,12 @@ class AudioMAEWrapper(nn.Module):
         audio (torch.Tensor): mono input sounds @44,1khz of shape (n_sounds, n_channels=1, n_samples) in the range [-1, 1]
 
         Returns:
-            torch.Tensor: audio embeddings of shape (n_sounds, embed_size=768, num_patches=513)
+            torch.Tensor: audio embeddings of shape (n_sounds, embed_size=768, num_patches=513 (512 patches + 1 cls token))
         """
         # kaldi fbanks can only be computed for a single audio sample at a time
         fbanks_batch = torch.stack([self._wav2fbank(sample) for sample in audio], dim=0)
-        fbanks_batch.unsqueeze_(dim=1)  # add the channel dimension
+        # add the channel dimension: (n_sounds,n_channels=1, target_len=1024, n_mels=128)
+        fbanks_batch.unsqueeze_(dim=1)
         embeddings = self.model.forward_encoder_no_mask(fbanks_batch)
         return embeddings.transpose(-1, -2)
 
