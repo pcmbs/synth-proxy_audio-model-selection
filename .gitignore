@@ -5,7 +5,7 @@
 *.lock
 Thumbs.db
 .python-version
-
+*.egg-info
 .pytestcache/
 .vscode/
 .venv/

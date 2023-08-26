@@ -1,4 +1,4 @@
-# pylint: disable=E1101,C0413,W1203
+# pylint: disable=C0413,W1203
 """
 Module containing functions for the sound attributes ranking evaluation,
 used to evaluate the ability of a model to order sounds subject to monotonic changes of parameter values
@@ -17,15 +17,7 @@ from torch.utils.data import DataLoader
 import torchmetrics.functional as tm_functional
 from torchmetrics.functional import pearson_corrcoef
 
-# add parents directory to sys.path if run as as main (for debugging purposes)
-if __name__ == "__main__":
-    import sys
-
-    sys.path.insert(1, str(Path(__file__).parents[1]))
-
-from data.tal_noisemaker.sound_attributes_ranking_dataset import (
-    SoundAttributesRankingDataset,
-)
+from data.tal_noisemaker import SoundAttributesRankingDataset
 from utils.embeddings import compute_embeddings
 from utils import reduce_fn as r_fn
 
@@ -68,9 +60,7 @@ def sound_attributes_ranking_eval(
         Dict[str, float]: A dictionary containing the correlation coefficients for each parameter variation,
         as well as the mean and median correlation coefficients.
     """
-    path_to_dataset = (
-        Path(path_to_dataset) if isinstance(path_to_dataset, str) else path_to_dataset
-    )
+    path_to_dataset = Path(path_to_dataset) if isinstance(path_to_dataset, str) else path_to_dataset
 
     available_attributes = sorted([p.stem for p in path_to_dataset.iterdir()])
     if ".DS_Store" in available_attributes:
@@ -140,13 +130,9 @@ def _compute_corrcoeff_for_preset(
 
     ranking_target = torch.tensor(ranks[1:]).float().to(DEVICE)
 
-    corrcoeff_up = pearson_corrcoef(
-        preds=indices[0, 1:].float(), target=ranking_target
-    ).item()
+    corrcoeff_up = pearson_corrcoef(preds=indices[0, 1:].float(), target=ranking_target).item()
 
-    corrcoeff_down = pearson_corrcoef(
-        preds=indices[-1, 1:].float(), target=ranking_target.flip(0) - 1
-    ).item()
+    corrcoeff_down = pearson_corrcoef(preds=indices[-1, 1:].float(), target=ranking_target.flip(0) - 1).item()
 
     return corrcoeff_up, corrcoeff_down
 
@@ -158,15 +144,11 @@ if __name__ == "__main__":
     # set torch device
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
     PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT"))
-    PATH_TO_DATASET = (
-        PROJECT_ROOT / "data" / "TAL-NoiseMaker" / "sound_attributes_ranking_dataset"
-    )
+    PATH_TO_DATASET = PROJECT_ROOT / "data" / "TAL-NoiseMaker" / "sound_attributes_ranking_dataset"
     DISTANCE_FN = "pairwise_manhattan_distance"
     REDUC_FN = "global_avg_pool_time"
 
     encoder = AudioMAEWrapper(ckpt_name="as-2M_pt+ft")
 
-    corrcoeff = sound_attributes_ranking_eval(
-        PATH_TO_DATASET, encoder, DISTANCE_FN, REDUC_FN
-    )
+    corrcoeff = sound_attributes_ranking_eval(PATH_TO_DATASET, encoder, DISTANCE_FN, REDUC_FN)
     print("breakpoint me!")

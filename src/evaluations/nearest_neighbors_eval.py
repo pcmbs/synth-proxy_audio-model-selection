@@ -13,7 +13,7 @@ from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
 import wandb
-from data.nsynth.nsynth_dataset import NSynthDataset
+from data.nsynth import NSynthDataset
 from utils import reduce_fn as r_fn
 from utils.distances import nearest_neighbors, iterative_distance_matrix
 from utils.embeddings import compute_embeddings
@@ -53,9 +53,7 @@ def nearest_neighbors_eval(
     """
     nsynth_dataset = NSynthDataset(root=cfg.data.root, sources=cfg.data.sources)
 
-    nsynth_dataloader = DataLoader(
-        nsynth_dataset, batch_size=cfg.data.batch_size, shuffle=cfg.data.shuffle
-    )
+    nsynth_dataloader = DataLoader(nsynth_dataset, batch_size=cfg.data.batch_size, shuffle=cfg.data.shuffle)
 
     embeddings, sample_indices = compute_embeddings(
         encoder=encoder,
@@ -124,14 +122,10 @@ def _log_neighbors(
         elif current_mode == "linspace":
             indices = sorted_indices[
                 :,
-                torch.linspace(
-                    0, len(sample_indices) - 2, num_neighbors, dtype=torch.long
-                ),
+                torch.linspace(0, len(sample_indices) - 2, num_neighbors, dtype=torch.long),
             ]
         else:
-            raise ValueError(
-                f"mode must be 'nearest', 'farthest', or 'linspace', not '{current_mode}'"
-            )
+            raise ValueError(f"mode must be 'nearest', 'farthest', or 'linspace', not '{current_mode}'")
 
         for pairs in indices:
             table = _generate_log_table(

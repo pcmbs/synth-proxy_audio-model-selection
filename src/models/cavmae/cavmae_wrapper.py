@@ -20,7 +20,7 @@ import torch
 from torch import nn
 import torchaudio
 
-from . import CAVMAEFTAudio
+from models.cavmae.audio_mdl import CAVMAEFTAudio
 
 load_dotenv()  # take environment variables from .env for checkpoints folder
 # path to download/load checkpoints

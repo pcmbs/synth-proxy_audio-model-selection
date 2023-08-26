@@ -24,7 +24,7 @@ from dotenv import load_dotenv
 import torch
 from torch import nn
 
-from . import base, base2level, base2levelmel
+from models.passt import base, base2level, base2levelmel
 
 load_dotenv()  # take environment variables from .env for checkpoints folder
 torch.hub.set_dir(os.environ["PROJECT_ROOT"])  # path to download/load checkpoints
@@ -87,9 +87,7 @@ class PasstWrapper(nn.Module):
             self.model = base2levelmel.get_concat_2levelmel_model(arch=arch, mode=mode)
             self._module = base2levelmel
         else:
-            raise ValueError(
-                "features should be 'base', 'base2level', or 'base2levelmel'"
-            )
+            raise ValueError("features should be 'base', 'base2level', or 'base2levelmel'")
         self.features = features
 
     @property

@@ -10,17 +10,18 @@ Github Repo: https://github.com/facebookresearch/AudioMAE/tree/main
   year = {2022}
 }
 """
-from collections import OrderedDict
 import os
+from contextlib import contextmanager
+from collections import OrderedDict
+import pathlib
 from pathlib import Path
 
-import numpy as np
 import torch
 import torchaudio
 from dotenv import load_dotenv
 from torch import nn
 
-from . import mae_vit_base_patch16_encoder_only
+from models.audiomae.nets.models_mae_encoder_only import mae_vit_base_patch16
 
 load_dotenv()  # take environment variables from .env for checkpoints folder
 # path to download/load checkpoints
@@ -28,6 +29,22 @@ CKPT_FOLDER = Path(os.environ["PROJECT_ROOT"]) / "checkpoints"
 torch.hub.set_dir(CKPT_FOLDER)
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+@contextmanager
+def set_posix_windows():
+    """
+    Context manager to temporarily set pathlib.PosixPath to WindowsPath
+    to avoid pathlib error.
+    source: https://stackoverflow.com/a/68796747
+    """
+    posix_backup = pathlib.PosixPath
+    try:
+        pathlib.PosixPath = pathlib.WindowsPath
+        yield
+    finally:
+        pathlib.PosixPath = posix_backup
+
 
 # Adapted from
 # https://github.com/facebookresearch/AudioMAE/blob/main/demo/aud_mae_visualize.ipynb
@@ -64,24 +81,20 @@ class AudioMAEWrapper(nn.Module):
                 url=f"https://drive.google.com/uc?export=download&confirm=s5vl&id={ckpt_id}",
                 dst=ckpt_path,
             )
-        checkpoint = torch.load(
-            ckpt_path,
-            map_location=DEVICE,
-        )
+        with set_posix_windows():
+            checkpoint = torch.load(
+                ckpt_path,
+                map_location=DEVICE,
+            )
         if ckpt_name == "as-2M_pt+ft":
             # layer norm params starts with fc_norm instead of norm (probs since models_vit instead of models_mae)
             checkpoint = OrderedDict(
-                [
-                    (k[3:], v) if k.startswith("fc_norm") else (k, v)
-                    for k, v in checkpoint["model"].items()
-                ]
+                [(k[3:], v) if k.startswith("fc_norm") else (k, v) for k, v in checkpoint["model"].items()]
             )
         else:  # ckpt_name == "as-2M_pt"
             checkpoint = checkpoint["model"]
         # build model
-        self.model = mae_vit_base_patch16_encoder_only(
-            in_chans=1, audio_exp=True, img_size=(1024, 128)
-        )
+        self.model = mae_vit_base_patch16(in_chans=1, audio_exp=True, img_size=(1024, 128))
         miss, _ = self.model.load_state_dict(checkpoint, strict=False)
         print(f"Missing weights from checkpoint: {miss}")
 

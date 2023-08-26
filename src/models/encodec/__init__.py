@@ -20,3 +20,4 @@ from .conv import (
 from .lstm import SLSTM
 from .seanet import SEANetEncoder  # , SEANetDecoder
 from .encoder import EncodecEncoder
+from .encodec_wrapper import EncodecWrapper
