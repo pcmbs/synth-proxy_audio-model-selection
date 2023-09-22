@@ -1,6 +1,0 @@
-encoder: 
-  _target_: models.audiomae.audiomae_wrapper.AudioMAEWrapper
-  ckpt_name: as-2M_pt+ft
-
-name: audio-mae_${.encoder.ckpt_name}
-group: audio-mae
