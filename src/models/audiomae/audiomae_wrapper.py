@@ -55,13 +55,14 @@ def set_posix_windows():
 # patch embedding:
 # (n_sounds, 512, num_patches=512, embed_dim=768)
 # contextual_embs:
-# the encoder output is the mean over the 3 last transformer layers' output
+# the encoder output is the mean over the "encoder_depth - (contextual_depth+1)" last transformer layers' output
+# if contextual_depth=-1 then the output is the last transformer layer followed by a layer norm
 # encoder output shape (after final transpose:
 # (n_sounds, embed_size=768, num_patches=513 (512 patches + 1 cls token))
 
 
 class AudioMAEWrapper(nn.Module):
-    def __init__(self, ckpt_name: str = "as-2M_pt") -> None:
+    def __init__(self, ckpt_name: str = "as-2M_pt", contextual_depth: int = 8) -> None:
         super().__init__()
         if ckpt_name == "as-2M_pt+ft":
             ckpt_id = "18EsFOyZYvBYHkJ7_n7JFFWbj6crz01gq"
@@ -94,7 +95,9 @@ class AudioMAEWrapper(nn.Module):
         else:  # ckpt_name == "as-2M_pt"
             checkpoint = checkpoint["model"]
         # build model
-        self.model = mae_vit_base_patch16(in_chans=1, audio_exp=True, img_size=(1024, 128))
+        self.model = mae_vit_base_patch16(
+            in_chans=1, audio_exp=True, img_size=(1024, 128), contextual_depth=contextual_depth
+        )
         miss, _ = self.model.load_state_dict(checkpoint, strict=False)
         print(f"Missing weights from checkpoint: {miss}")
 

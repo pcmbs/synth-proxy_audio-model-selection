@@ -13,7 +13,7 @@ import torch
 import torch.nn as nn
 import timm
 from timm.models.layers import to_2tuple, trunc_normal_, DropPath
-from timm.models.vision_transformer import Attention, Mlp, PatchEmbed, Block
+from timm.models.vision_transformer import Attention, Mlp  # , PatchEmbed, Block
 from .pos_embed import get_2d_sincos_pos_embed
 
 
@@ -28,9 +28,7 @@ class PatchEmbed(nn.Module):
         self.patch_size = patch_size
         self.num_patches = num_patches
 
-        self.proj = nn.Conv2d(
-            in_chans, embed_dim, kernel_size=patch_size, stride=patch_size
-        )
+        self.proj = nn.Conv2d(in_chans, embed_dim, kernel_size=patch_size, stride=patch_size)
 
     def forward(self, x):
         x = self.proj(x).flatten(2).transpose(1, 2)
@@ -59,7 +57,7 @@ class Block(nn.Module):
             dim,
             num_heads=num_heads,
             qkv_bias=qkv_bias,
-            qk_scale=qk_scale,
+            # qk_scale=qk_scale,
             attn_drop=attn_drop,
             proj_drop=drop,
         )
@@ -228,9 +226,7 @@ class CAVMAE(nn.Module):
         self.decoder_norm = norm_layer(decoder_embed_dim)
 
         # project channel is different for two modality, use two projection head
-        self.decoder_pred_a = nn.Linear(
-            decoder_embed_dim, patch_size**2 * 1, bias=True
-        )  # decoder to patch
+        self.decoder_pred_a = nn.Linear(decoder_embed_dim, patch_size**2 * 1, bias=True)  # decoder to patch
         self.decoder_pred_v = nn.Linear(
             decoder_embed_dim, patch_size**2 * in_chans, bias=True
         )  # decoder to patch
@@ -266,9 +262,7 @@ class CAVMAE(nn.Module):
             int(self.patch_embed_a.num_patches / 8),
             cls_token=False,
         )
-        self.decoder_pos_embed_a.data.copy_(
-            torch.from_numpy(decoder_pos_embed_a).float().unsqueeze(0)
-        )
+        self.decoder_pos_embed_a.data.copy_(torch.from_numpy(decoder_pos_embed_a).float().unsqueeze(0))
 
         decoder_pos_embed_v = get_2d_sincos_pos_embed(
             self.decoder_pos_embed_v.shape[-1],
@@ -276,9 +270,7 @@ class CAVMAE(nn.Module):
             int(self.patch_embed_v.num_patches**0.5),
             cls_token=False,
         )
-        self.decoder_pos_embed_v.data.copy_(
-            torch.from_numpy(decoder_pos_embed_v).float().unsqueeze(0)
-        )
+        self.decoder_pos_embed_v.data.copy_(torch.from_numpy(decoder_pos_embed_v).float().unsqueeze(0))
 
         # initialize patch_embed like nn.Linear (instead of nn.Conv2d)
         w = self.patch_embed_a.proj.weight.data
@@ -340,9 +332,7 @@ class CAVMAE(nn.Module):
         noise = torch.rand(N, L, device=x.device)  # noise in [0, 1]
 
         # sort noise for each sample
-        ids_shuffle = torch.argsort(
-            noise, dim=1
-        )  # ascend: small is keep, large is remove
+        ids_shuffle = torch.argsort(noise, dim=1)  # ascend: small is keep, large is remove
         ids_restore = torch.argsort(ids_shuffle, dim=1)
 
         # keep the first subset
@@ -391,9 +381,7 @@ class CAVMAE(nn.Module):
         noise = noise.reshape(N, L)
 
         # sort noise for each sample, only need to manuplate these two ids_shuffle, ids_restore
-        ids_shuffle = torch.argsort(
-            noise, dim=1
-        )  # ascend: small is keep, large is remove
+        ids_shuffle = torch.argsort(noise, dim=1)  # ascend: small is keep, large is remove
         ids_restore = torch.argsort(ids_shuffle, dim=1)
 
         # keep the first subset
@@ -408,9 +396,7 @@ class CAVMAE(nn.Module):
 
         return x_masked, mask, ids_restore
 
-    def forward_encoder(
-        self, a, v, mask_ratio_a, mask_ratio_v, mask_mode="unstructured"
-    ):
+    def forward_encoder(self, a, v, mask_ratio_a, mask_ratio_v, mask_mode="unstructured"):
         # embed patches
         a = a.unsqueeze(1)
         a = a.transpose(2, 3)
@@ -471,9 +457,7 @@ class CAVMAE(nn.Module):
             ],
             dim=1,
         )  # no cls token
-        a_ = torch.gather(
-            a_, dim=1, index=ids_restore_a.unsqueeze(-1).repeat(1, 1, x.shape[2])
-        )  # unshuffle
+        a_ = torch.gather(a_, dim=1, index=ids_restore_a.unsqueeze(-1).repeat(1, 1, x.shape[2]))  # unshuffle
 
         # similar for the visual modality
         mask_tokens_v = self.mask_token.repeat(x.shape[0], int(mask_v[0].sum()), 1)
@@ -484,16 +468,12 @@ class CAVMAE(nn.Module):
             ],
             dim=1,
         )  # no cls token
-        v_ = torch.gather(
-            v_, dim=1, index=ids_restore_v.unsqueeze(-1).repeat(1, 1, x.shape[2])
-        )  # unshuffle
+        v_ = torch.gather(v_, dim=1, index=ids_restore_v.unsqueeze(-1).repeat(1, 1, x.shape[2]))  # unshuffle
 
         # concatenate audio and visual tokens
         x = torch.cat([a_, v_], dim=1)
 
-        decoder_pos_embed = torch.cat(
-            [self.decoder_pos_embed_a, self.decoder_pos_embed_v], dim=1
-        )
+        decoder_pos_embed = torch.cat([self.decoder_pos_embed_a, self.decoder_pos_embed_v], dim=1)
         x = x + decoder_pos_embed
 
         # add modality indication tokens
@@ -538,12 +518,8 @@ class CAVMAE(nn.Module):
             )
             return nce, c_acc
         else:
-            nce_1 = -torch.mean(
-                torch.diag(torch.nn.functional.log_softmax(total, dim=0))
-            )
-            nce_2 = -torch.mean(
-                torch.diag(torch.nn.functional.log_softmax(total.t(), dim=0))
-            )
+            nce_1 = -torch.mean(torch.diag(torch.nn.functional.log_softmax(total, dim=0)))
+            nce_2 = -torch.mean(torch.diag(torch.nn.functional.log_softmax(total.t(), dim=0)))
             c_acc_1 = (
                 torch.sum(
                     torch.eq(
@@ -556,9 +532,7 @@ class CAVMAE(nn.Module):
             c_acc_2 = (
                 torch.sum(
                     torch.eq(
-                        torch.argmax(
-                            torch.nn.functional.softmax(total.t(), dim=0), dim=0
-                        ),
+                        torch.argmax(torch.nn.functional.softmax(total.t(), dim=0), dim=0),
                         torch.arange(0, total.shape[0], device=audio_rep.device),
                     )
                 )
@@ -620,14 +594,10 @@ class CAVMAE(nn.Module):
             ids_restore_v,
             latent_c_a,
             latent_c_v,
-        ) = self.forward_encoder(
-            audio, imgs, mask_ratio_a, mask_ratio_v, mask_mode=mask_mode
-        )
+        ) = self.forward_encoder(audio, imgs, mask_ratio_a, mask_ratio_v, mask_mode=mask_mode)
         # if mae loss is used
         if mae_loss_weight != 0:
-            pred_a, pred_v = self.forward_decoder(
-                latent, mask_a, ids_restore_a, mask_v, ids_restore_v
-            )
+            pred_a, pred_v = self.forward_decoder(latent, mask_a, ids_restore_a, mask_v, ids_restore_v)
             loss_mae_a = self.forward_mae_loss(audio, pred_a, mask_a, "a")
             loss_mae_v = self.forward_mae_loss(imgs, pred_v, mask_v, "v")
             loss_mae = mae_loss_weight * (loss_mae_a + loss_mae_v)
@@ -641,14 +611,10 @@ class CAVMAE(nn.Module):
         # if contrastive loss is used
         if contrast_loss_weight != 0:
             # note this is single directional
-            loss_c, c_acc = self.forward_contrastive(
-                latent_c_a.mean(dim=1), latent_c_v.mean(dim=1)
-            )
+            loss_c, c_acc = self.forward_contrastive(latent_c_a.mean(dim=1), latent_c_v.mean(dim=1))
             loss_c = contrast_loss_weight * loss_c
         else:
-            loss_c, c_acc = torch.tensor(0.0, device=audio.device), torch.tensor(
-                0.0, device=audio.device
-            )
+            loss_c, c_acc = torch.tensor(0.0, device=audio.device), torch.tensor(0.0, device=audio.device)
 
         loss = loss_mae + loss_c
 
@@ -671,9 +637,7 @@ class CAVMAE(nn.Module):
             ids_restore_v,
             latent_c_a,
             latent_c_v,
-        ) = self.forward_encoder(
-            audio, imgs, mask_ratio_a, mask_ratio_v, mask_mode=mask_mode
-        )
+        ) = self.forward_encoder(audio, imgs, mask_ratio_a, mask_ratio_v, mask_mode=mask_mode)
         pred_a, pred_v = self.forward_decoder(
             latent, mask_a, ids_restore_a, mask_v, ids_restore_v
         )  # [N, L, p*p*3]
@@ -802,9 +766,7 @@ class CAVMAEFT(nn.Module):
         self.norm_v = norm_layer(embed_dim)
         self.norm = norm_layer(embed_dim)
 
-        self.mlp_head = nn.Sequential(
-            nn.LayerNorm(embed_dim), nn.Linear(embed_dim, label_dim)
-        )
+        self.mlp_head = nn.Sequential(nn.LayerNorm(embed_dim), nn.Linear(embed_dim, label_dim))
 
         self.initialize_weights()
 

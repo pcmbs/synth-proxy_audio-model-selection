@@ -40,6 +40,8 @@ def global_avg_pool_channel(embeddings: torch.Tensor) -> torch.Tensor:
 def global_avg_pool_time(embeddings: torch.Tensor) -> torch.Tensor:
     """
     Compute the global average pooling of the given embeddings.
+    Note that when applied to a ViT-based model,
+    this operation is equivalent to the average pooling over the patches.
 
     Args
     - `embeddings` (torch.Tensor): The input embeddings tensor.
@@ -66,6 +68,8 @@ def global_max_pool_channel(embeddings: torch.Tensor) -> torch.Tensor:
 def global_max_pool_time(embeddings: torch.Tensor) -> torch.Tensor:
     """
     Compute the global max pooling of the given embeddings.
+        Note that when applied to a ViT-based model,
+    this operation is equivalent to the max pooling over the patches.
 
     Args
     - `embeddings` (torch.Tensor): The input embeddings tensor.

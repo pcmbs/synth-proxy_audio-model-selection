@@ -69,9 +69,7 @@ class MaskedAutoencoderViT(nn.Module):
         # --------------------------------------------------------------------------
         # MAE encoder specifics
         if use_custom_patch:
-            print(
-                f"Use custom patch_emb with patch size: {patch_size}, stride: {stride}"
-            )
+            print(f"Use custom patch_emb with patch size: {patch_size}, stride: {stride}")
             self.patch_embed = PatchEmbed_new(
                 img_size=img_size,
                 patch_size=patch_size,
@@ -159,15 +157,26 @@ class MaskedAutoencoderViT(nn.Module):
         x = torch.cat((cls_tokens, x), dim=1)
 
         # apply Transformer blocks
-        contextual_embs = []
-        for n, blk in enumerate(self.blocks):
-            x = blk(x)
-            if n > self.contextual_depth:
-                contextual_embs.append(self.norm(x))
-        # x = self.norm(x)
-        contextual_emb = torch.stack(contextual_embs, dim=0).mean(dim=0)
 
-        return contextual_emb
+        # pcmbs: no contextual embeddings, i.e., only last layer's output followed
+        # by a layer norm (default behavior?)
+        if self.contextual_depth == -1:
+            for blk in self.blocks:
+                x = blk(x)
+            x = self.norm(x)
+            return x
+
+        # contextual embeddings: mean over the last
+        # "encoder_depth - (contextual_depth+1)" layers (without layer norm)
+        else:
+            contextual_embs = []
+            for n, blk in enumerate(self.blocks):
+                x = blk(x)
+                if n > self.contextual_depth:
+                    contextual_embs.append(self.norm(x))
+            contextual_emb = torch.stack(contextual_embs, dim=0).mean(dim=0)
+
+            return contextual_emb
 
 
 def mae_vit_small_patch16_dec512d8b(**kwargs):
