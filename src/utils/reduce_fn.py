@@ -4,8 +4,6 @@ Embeddings reduction functions.
 
 import torch
 
-# TODO: for embeddings.ndim==3, extend to support embeddings with a higher number of dimension
-
 # TODO: try to process the embeddings as follow:
 # - concat features from different layers (see papers in Zotero)
 # - random projection

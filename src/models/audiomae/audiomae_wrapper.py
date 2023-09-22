@@ -62,7 +62,9 @@ def set_posix_windows():
 
 
 class AudioMAEWrapper(nn.Module):
-    def __init__(self, ckpt_name: str = "as-2M_pt", contextual_depth: int = 8) -> None:
+    def __init__(
+        self, ckpt_name: str = "as-2M_pt", contextual_depth: int = 8, class_token: bool = True
+    ) -> None:
         super().__init__()
         if ckpt_name == "as-2M_pt+ft":
             ckpt_id = "18EsFOyZYvBYHkJ7_n7JFFWbj6crz01gq"
@@ -101,6 +103,8 @@ class AudioMAEWrapper(nn.Module):
         miss, _ = self.model.load_state_dict(checkpoint, strict=False)
         print(f"Missing weights from checkpoint: {miss}")
 
+        # if the class token only should be used or excluded
+        self.class_token = class_token
         # stats for mel spectrogram normalization
         self.norm_mean = -4.2677393
         self.norm_std = 4.5689974
@@ -127,14 +131,18 @@ class AudioMAEWrapper(nn.Module):
         audio (torch.Tensor): mono input sounds @44,1khz of shape (n_sounds, n_channels=1, n_samples) in the range [-1, 1]
 
         Returns:
-            torch.Tensor: audio embeddings of shape (n_sounds, embed_size=768, num_patches=513 (512 patches + 1 cls token))
+            torch.Tensor: audio embeddings of shape (n_sounds, embed_size=768, 512 if class_token==False else 1)
         """
         # kaldi fbanks can only be computed for a single audio sample at a time
         fbanks_batch = torch.stack([self._wav2fbank(sample) for sample in audio], dim=0)
         # add the channel dimension: (n_sounds,n_channels=1, target_len=1024, n_mels=128)
         fbanks_batch.unsqueeze_(dim=1)
-        embeddings = self.model.forward_encoder_no_mask(fbanks_batch)
-        return embeddings.transpose(-1, -2)
+        embeddings = self.model.forward_encoder_no_mask(fbanks_batch).transpose(-1, -2)
+
+        if self.class_token:  # use only class token
+            return embeddings[:, :, 0].unsqueeze_(-1)
+        else:  # don't use class token
+            return embeddings[:, :, 1:]
 
     def _wav2fbank(self, audio: torch.Tensor) -> torch.Tensor:
         TARGET_LEN = 1024
