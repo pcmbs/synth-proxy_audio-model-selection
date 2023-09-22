@@ -1,8 +1,0 @@
-encoder: 
-  _target_: models.audiomae.audiomae_wrapper.AudioMAEWrapper
-  ckpt_name: as-2M_pt+ft
-  contextual_depth: 7
-  class_token: false
-
-name: audio-mae_${.encoder.ckpt_name}_${.encoder.contextual_depth}_${.encoder.class_token}
-group: audio-mae
