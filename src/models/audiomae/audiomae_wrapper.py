@@ -53,15 +53,15 @@ def set_posix_windows():
 # Adapted from
 # https://github.com/facebookresearch/AudioMAE/blob/main/demo/aud_mae_visualize.ipynb
 # learned positional embedding
-# patch embedding: 2Dconv layer (C_in=1, C_out=768, kernel_size=16, stride=16) (results in 512 patches)ð
+# patch embedding: 2Dconv layer (C_in=1, C_out=768, kernel_size=16, stride=16) (results in 512 patches)
 # input shape: (N, 1, 44_100)
 # fbanks shape (after unsqueeze): (N, n_channels=1, target_len=1024, n_mel=128)
 # patch embedding:
-# (n_sounds, 512, num_patches=512, embed_dim=768)
+# (n_sounds, num_patches=512, embed_dim=768)
 # contextual_embs:
 # the encoder output is the mean over the "encoder_depth - (contextual_depth+1)" last transformer layers' output
 # if contextual_depth=-1 then the output is the last transformer layer followed by a layer norm
-# encoder output shape (after final transpose:
+# encoder output shape (after final transpose):
 # (n_sounds, embed_size=768, num_patches=512)
 
 
@@ -111,7 +111,7 @@ class AudioMAEWrapper(nn.Module):
 
     @property
     def segment(self) -> None:
-        return None  # should be 10, to check
+        return 10
 
     @property
     def sample_rate(self) -> int:

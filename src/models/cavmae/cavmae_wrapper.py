@@ -51,7 +51,7 @@ class CAVMAEWrapper(nn.Module):
 
     @property
     def segment(self) -> None:
-        return None  # should be 10, to check
+        return 10
 
     @property
     def sample_rate(self) -> int:
