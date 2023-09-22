@@ -11,6 +11,7 @@ Github Repo: https://github.com/facebookresearch/AudioMAE/tree/main
 }
 """
 import os
+import sys
 from contextlib import contextmanager
 from collections import OrderedDict
 import pathlib
@@ -35,15 +36,18 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def set_posix_windows():
     """
     Context manager to temporarily set pathlib.PosixPath to WindowsPath
-    to avoid pathlib error.
+    to avoid pathlib error if required.
     source: https://stackoverflow.com/a/68796747
     """
-    posix_backup = pathlib.PosixPath
-    try:
-        pathlib.PosixPath = pathlib.WindowsPath
+    if sys.platform == "win32":
+        posix_backup = pathlib.PosixPath
+        try:
+            pathlib.PosixPath = pathlib.WindowsPath
+            yield
+        finally:
+            pathlib.PosixPath = posix_backup
+    else:
         yield
-    finally:
-        pathlib.PosixPath = posix_backup
 
 
 # Adapted from
