@@ -168,15 +168,19 @@ class MaskedAutoencoderViT(nn.Module):
 
         # contextual embeddings: mean over the last
         # "encoder_depth - (contextual_depth+1)" layers (without layer norm)
+        # rewrote the following to be more memory efficient
         else:
-            contextual_embs = []
+            # contextual_embs_old = []
+            contextual_embs = torch.zeros_like(x).to(x.device)
             for n, blk in enumerate(self.blocks):
                 x = blk(x)
                 if n > self.contextual_depth:
-                    contextual_embs.append(self.norm(x))
-            contextual_emb = torch.stack(contextual_embs, dim=0).mean(dim=0)
+                    # contextual_embs_old.append(self.norm(x))
+                    contextual_embs += self.norm(x)
+            # contextual_emb_old = torch.stack(contextual_embs_old, dim=0).mean(dim=0)
+            contextual_embs = contextual_embs / (self.encoder_depth - (self.contextual_depth + 1))
 
-            return contextual_emb
+            return contextual_embs
 
 
 def mae_vit_small_patch16_dec512d8b(**kwargs):

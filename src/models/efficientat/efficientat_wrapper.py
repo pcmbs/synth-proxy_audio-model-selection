@@ -37,15 +37,6 @@ torch.hub.set_dir(Path(os.environ["PROJECT_ROOT"]) / "checkpoints")
 # all_b denotes the features extracted from blocks b2, b11, b13, b15 using global avg pooling
 
 
-# Possible candidates
-# mn04_all_b_mel_avgs
-# mn10_all_b_mel_avgs
-# mn10_all_b_mel_avgs_mels256
-# mn20_all_b_mel_avgs
-# mn30_all_b_mel_avgs
-# mn40_all_b_mel_avgs
-
-
 class EfficientATWrapper(nn.Module):
     def __init__(self, model_name: str = "mn10_all_b_mel_avgs") -> None:
         super().__init__()

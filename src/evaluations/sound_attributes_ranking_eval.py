@@ -148,7 +148,7 @@ if __name__ == "__main__":
     DISTANCE_FN = "pairwise_manhattan_distance"
     REDUC_FN = "global_avg_pool_time"
 
-    encoder = AudioMAEWrapper(ckpt_name="as-2M_pt+ft")
+    encoder = AudioMAEWrapper(ckpt_name="as-2M_pt+ft", contextual_depth=4).to(DEVICE)
 
     corrcoeff = sound_attributes_ranking_eval(PATH_TO_DATASET, encoder, DISTANCE_FN, REDUC_FN)
     print("breakpoint me!")
