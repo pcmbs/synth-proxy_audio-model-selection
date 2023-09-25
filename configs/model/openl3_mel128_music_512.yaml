@@ -6,5 +6,5 @@ encoder:
   hop_size: 1.0
   center: false
 
-name: openl3_${.encoder.input_repr}_${.encoder.content_type}_${.encoder.embedding_size}
+name: openl3_${.encoder.input_repr}_${.encoder.content_type}_${.encoder.embedding_size}_h=${.encoder.hop_size}_c=${.encoder.center}
 group: openl3
