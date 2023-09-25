@@ -174,11 +174,11 @@ class MaskedAutoencoderViT(nn.Module):
             contextual_embs = torch.zeros_like(x).to(x.device)
             for n, blk in enumerate(self.blocks):
                 x = blk(x)
-                if n > self.contextual_depth:
+                if n >= self.contextual_depth:
                     # contextual_embs_old.append(self.norm(x))
                     contextual_embs += self.norm(x)
             # contextual_emb_old = torch.stack(contextual_embs_old, dim=0).mean(dim=0)
-            contextual_embs = contextual_embs / (self.encoder_depth - (self.contextual_depth + 1))
+            contextual_embs = contextual_embs / (self.encoder_depth - self.contextual_depth)
 
             return contextual_embs
 
