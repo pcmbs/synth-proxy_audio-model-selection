@@ -167,7 +167,7 @@ class MaskedAutoencoderViT(nn.Module):
             return x
 
         # contextual embeddings: mean over the last
-        # "encoder_depth - (contextual_depth+1)" layers (without layer norm)
+        # "encoder_depth - (contextual_depth)" layers (without layer norm)
         # rewrote the following to be more memory efficient
         else:
             # contextual_embs_old = []

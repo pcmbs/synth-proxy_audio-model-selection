@@ -59,7 +59,7 @@ def set_posix_windows():
 # patch embedding:
 # (n_sounds, num_patches=512, embed_dim=768)
 # contextual_embs:
-# the encoder output is the mean over the "encoder_depth - (contextual_depth+1)" last transformer layers' output
+# the encoder output is the mean over the "encoder_depth - contextual_depth" last transformer layers' output
 # if contextual_depth=-1 then the output is the last transformer layer followed by a layer norm
 # encoder output shape (after final transpose):
 # (n_sounds, embed_size=768, num_patches=512)
