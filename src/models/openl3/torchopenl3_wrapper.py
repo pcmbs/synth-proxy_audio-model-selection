@@ -64,6 +64,14 @@ class TorchOpenL3Wrapper(nn.Module):
         return f"openl3_{self.input_repr}_{self.content_type}_{self.embedding_size}"
 
     def forward(self, audio: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass.
+        audio (torch.Tensor): mono input sounds @48khz of shape (n_sounds, n_samples, n_channels=1) in the range [-1, 1]
+
+        Returns:
+            torch.Tensor: audio embeddings of shape (n_sounds, embed_size, n_timestamps)
+            n_timestamps depends on the input length and is computed based on a window size of 1sec with the chosen hop size.
+        """
         # audio of shape (batch, time, channels) required
         audio = audio.swapdims(-1, -2)
         embeddings, _ = self.encoder(audio=audio, sr=self.sample_rate)

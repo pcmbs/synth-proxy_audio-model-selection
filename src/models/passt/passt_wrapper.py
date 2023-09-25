@@ -113,7 +113,9 @@ class PasstWrapper(nn.Module):
         audio (torch.Tensor): mono input sounds @32khz of shape (n_sounds, n_channels=1, n_samples) in the range [-1, 1]
 
         Returns:
-            torch.Tensor: audio embeddings of shape (n_sounds, embed_size=768, n_timestamps)
+            torch.Tensor: audio embeddings of shape (n_sounds, embed_size=768, n_timestamps) where n_timestamps
+            is computed based on a window size of 160ms with a hop size of 50ms (5120 sand 1600 samples @32kHz, respectively)
+            and depends on the input length.
         """
         # passt requires mono input audio of shape (n_sounds, n_samples)
         audio = audio.squeeze(-2)

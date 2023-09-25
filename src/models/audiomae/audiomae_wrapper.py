@@ -128,7 +128,9 @@ class AudioMAEWrapper(nn.Module):
     def forward(self, audio: torch.Tensor) -> torch.Tensor:
         """
         Forward pass.
-        audio (torch.Tensor): mono input sounds @44,1khz of shape (n_sounds, n_channels=1, n_samples) in the range [-1, 1]
+        audio (torch.Tensor): mono input sounds @44,1khz of shape (n_sounds, n_channels=1, n_samples) in the range [-1, 1].
+        Note that the model's frame length is 10 seconds, such that shorted audio clips will be trimmed while
+        longer ones will be padded.
 
         Returns:
             torch.Tensor: audio embeddings of shape (n_sounds, embed_size=768, num_patches=512)

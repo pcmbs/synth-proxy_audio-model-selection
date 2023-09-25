@@ -24,7 +24,8 @@ load_dotenv()  # take environment variables from .env for checkpoints folder
 torch.hub.set_dir(Path(os.environ["PROJECT_ROOT"]) / "checkpoints")
 
 
-# Mono audio is sampled at 32 kHz and STFT is computed using 25 ms windows and a hop size of 10 ms.
+# Mono input sounds @32 kHz which get split based on a window size of 160ms with a hop size of 50ms.
+# Tnen, for each of the resulting frames, a STFT (25 ms window and hop size of 10 ms) and a
 # Log mel spectrograms with 128 frequency bands are computed and serve as input to the models.
 
 ##### Model terminology
@@ -65,6 +66,11 @@ class EfficientATWrapper(nn.Module):
         """
         Forward pass.
         audio (torch.Tensor): mono input sounds @32khz of shape (n_sounds, n_channels=1, n_samples) in the range [-1, 1]
+
+        Returns:
+            torch.Tensor: audio embeddings of shape (n_sounds, embed_size, n_timestamps) where embed_size depends on the model
+            and where n_timestamps is computed based on a window size of 160ms with a hop size of 50ms (5120 sand 1600 samples
+            @32kHz, respectively) and depends on the input length
         """
         # passt requires mono input audio of shape (n_sounds, n_samples)
         audio = audio.squeeze(-2)
