@@ -1,0 +1,8 @@
+encoder: 
+  _target_: models.mel_only.mel_only_model.MelModel
+  n_mels: 128
+  n_mfcc: 40
+  min_db: -80
+
+name: mel-only_${.encoder.n_mels}_${.encoder.n_mfcc}
+group: mel
