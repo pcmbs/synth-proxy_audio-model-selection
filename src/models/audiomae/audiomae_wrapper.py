@@ -144,7 +144,7 @@ class AudioMAEWrapper(nn.Module):
         return embeddings[:, :, 1:]  # don't use class token
 
     def _wav2fbank(self, audio: torch.Tensor) -> torch.Tensor:
-        TARGET_LEN = 1024
+        TARGET_LEN = int(torch.floor((10.26 - 0.025) / 0.01) + 1)  # 1024@16khz
         MELBINS = 128
 
         audio = audio - audio.mean()
