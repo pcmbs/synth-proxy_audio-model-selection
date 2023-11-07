@@ -17,6 +17,7 @@ from collections import OrderedDict
 import pathlib
 from pathlib import Path
 
+import numpy as np
 import torch
 import torchaudio
 from dotenv import load_dotenv
@@ -144,7 +145,7 @@ class AudioMAEWrapper(nn.Module):
         return embeddings[:, :, 1:]  # don't use class token
 
     def _wav2fbank(self, audio: torch.Tensor) -> torch.Tensor:
-        TARGET_LEN = int(torch.floor((10.26 - 0.025) / 0.01) + 1)  # 1024@16khz
+        TARGET_LEN = int(np.floor((10.26 - 0.025) / 0.01) + 1)  # 1024@16khz
         MELBINS = 128
 
         audio = audio - audio.mean()
