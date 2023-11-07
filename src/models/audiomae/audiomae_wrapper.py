@@ -116,7 +116,8 @@ class AudioMAEWrapper(nn.Module):
 
     @property
     def sample_rate(self) -> int:
-        return 44_100
+        # return 44_100
+        return 16_000
 
     @property
     def channels(self) -> int:
