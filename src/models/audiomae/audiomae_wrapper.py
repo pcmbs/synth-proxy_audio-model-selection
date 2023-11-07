@@ -116,8 +116,11 @@ class AudioMAEWrapper(nn.Module):
 
     @property
     def sample_rate(self) -> int:
-        # return 44_100
-        return 16_000
+        # should technically be 16_000 since it is what the model was trained on
+        # but we use 44_100 to include high frequency content
+        # small loss of performance on some sound attributes (probably due to the difference in feautures)
+        # but non-marginal gain for sound attributes relying on HF.
+        return 44_100
 
     @property
     def channels(self) -> int:
