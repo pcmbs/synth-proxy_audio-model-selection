@@ -36,6 +36,10 @@ class MelModel(nn.Module):
         else:
             self.n_mfcc = None
 
+        # normalization statistics (from AudioSet)
+        self.norm_mean = -4.2677393
+        self.norm_std = 4.5689974
+
     @property
     def segment(self) -> None:
         return None
@@ -50,7 +54,7 @@ class MelModel(nn.Module):
 
     @property
     def name(self) -> str:
-        return f"mel-only"
+        return f"mel{self.n_mels}_{self.n_mfcc}_{self.min_db}"
 
     def forward(self, audio: torch.Tensor) -> torch.Tensor:
         """
@@ -70,6 +74,7 @@ class MelModel(nn.Module):
         # clamp magnitude by below to 10^(MIN_DB/10) (/10 and not /20 since squared spectrogram)
         mel_specgram = torch.maximum(mel_specgram, torch.tensor(10 ** (self.min_db / 10)))
         mel_specgram = 10 * torch.log10(mel_specgram)  # log magnitude spectrogram (in dB)
+        mel_specgram = (mel_specgram - self.norm_mean) / self.norm_std
         return mel_specgram
 
     def _compute_mfcc(self, audio: torch.Tensor) -> torch.Tensor:
