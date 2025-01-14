@@ -23,5 +23,4 @@ checkpoints/
 !checkpoints/encodec*
 resources/
 
-src/test_model.py
-src/cfg_debug.py
+div_check/
