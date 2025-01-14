@@ -30,9 +30,7 @@ log = logging.getLogger(__name__)
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
-@hydra.main(
-    version_base=None, config_path="../configs", config_name="evaluate_audio_model"
-)
+@hydra.main(version_base=None, config_path="../configs", config_name="evaluate_audio_model")
 def evaluate_audio_model(cfg: DictConfig) -> None:
     """
     Evaluate an audio model based on the provided configuration and log the result and used hyperparameters to wandb.
@@ -63,6 +61,8 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
     if cfg.get("wandb"):
         log.info("Instantiating wandb logger")
         logger = wandb.init(**cfg.wandb)
+    else:
+        logger = None
 
     #################### evaluations
 
@@ -75,30 +75,29 @@ def evaluate_audio_model(cfg: DictConfig) -> None:
             distance_fn=cfg.distance_fn,
             reduce_fn=cfg.reduce_fn,
         )
+    else:
+        corrcoefs = None
 
-    if cfg.eval.get("nearest_neighbors"):
-        if not cfg.get("wandb"):
-            log.info(
-                "nearest neighbors evaluation requires a wandb logger, skipping..."
-            )
-        else:
-            log.info("Running nearest neighbors evaluation...")
+    if cfg.eval.get("nearest_neighbors") and logger is not None:
+        log.info("Running nearest neighbors evaluation...")
 
-            nearest_neighbors_eval(
-                cfg=cfg.eval.nearest_neighbors,
-                encoder=encoder,
-                distance_fn=cfg.distance_fn,
-                reduce_fn=cfg.reduce_fn,
-                logger=logger,
-            )
+        nearest_neighbors_eval(
+            cfg=cfg.eval.nearest_neighbors,
+            encoder=encoder,
+            distance_fn=cfg.distance_fn,
+            reduce_fn=cfg.reduce_fn,
+            logger=logger,
+        )
+    elif cfg.eval.get("nearest_neighbors") and logger is None:
+        log.info("nearest neighbors evaluation requires a wandb logger, skipping...")
 
     #################### Logging hparams
 
-    if cfg.get("wandb"):
+    if logger is not None:
         log.info("Logging hyperparameters...")
         log_hyperparameters(
             cfg=cfg,
-            corrcoefs=corrcoefs if cfg.eval.get("sound_attributes_ranking") else None,
+            corrcoefs=corrcoefs,
             encoder=encoder,
             # torchinfo_summary=torchinfo_summary,
         )

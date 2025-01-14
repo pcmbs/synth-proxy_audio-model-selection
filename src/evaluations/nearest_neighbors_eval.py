@@ -51,6 +51,8 @@ def nearest_neighbors_eval(
     Returns
     - `None`
     """
+    assert logger is not None
+
     nsynth_dataset = NSynthDataset(root=cfg.data.root, sources=cfg.data.sources)
 
     nsynth_dataloader = DataLoader(nsynth_dataset, batch_size=cfg.data.batch_size, shuffle=cfg.data.shuffle)
