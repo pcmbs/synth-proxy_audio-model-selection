@@ -1,0 +1,24 @@
+# @package _global_
+
+defaults:
+  - _self_
+  - hydra: default
+  - wandb: default
+  - paths: default
+  - debug: null
+
+  # model to evaluate
+  - model: passt_s_swa_p16_128_ap476 #openl3_mel256_music_6144 #encodec48khz
+
+  # function used to reduce the embedding dimensionality
+  - reduce_fn: identity
+
+  # function used to calculate the distance matrix of the sound embeddings
+  # (must be the name of a torchmetrics.functional function)
+  - distance_fn: pairwise_manhattan_distance
+
+# seed for random number generators in pytorch, numpy and python.random
+seed: 667
+
+# task name, determines output directory path
+task_name: ${model.name}

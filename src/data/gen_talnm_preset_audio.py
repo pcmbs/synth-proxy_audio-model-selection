@@ -2,6 +2,7 @@
 Module used to render the TAL-NoiseMaker preset modifications used
 for the sound attributes ranking evaluation.
 """
+
 import json
 import os
 from pathlib import Path
@@ -13,12 +14,12 @@ import numpy as np
 from dotenv import load_dotenv
 from scipy.io import wavfile
 
-import data.tal_noisemaker.noisemaker_preset_mods as npm
+from data import talnm_preset_mods as tpm
 
 load_dotenv()  # take environment variables from .env for checkpoints folder
 
 PROJECT_ROOT = Path(os.environ["PROJECT_ROOT"])
-DATA_PATH = Path(os.environ["PROJECT_ROOT"]) / "data" / "TAL-NoiseMaker"
+DATA_PATH = Path(os.environ["PROJECT_ROOT"]) / "data"
 EXPORT_PATH = DATA_PATH / "sound_attributes_ranking_dataset"
 
 
@@ -120,8 +121,9 @@ class PresetRenderer:
 
 
 def generate_eval_audio(
+    presets_json: dict,
     renderer: PresetRenderer,
-    sound_attribute: npm.PresetModList,
+    sound_attribute: tpm.PresetModList,
     current_preset_idx: Optional[int] = None,
     num_samples: int = 10,
 ) -> Tuple[List[np.ndarray], List[str]]:
@@ -141,7 +143,7 @@ def generate_eval_audio(
 
     for p_idx, p in zip(preset_indices, preset_mods_to_render):
         # assign base preset to generate audio
-        renderer.assign_preset(presets[p.preset])
+        renderer.assign_preset(presets_json[p.preset])
 
         # index of the main parameter
         main_param_idx = p.param_idx if p.param_idx else sound_attribute.param_idx
@@ -194,7 +196,7 @@ if __name__ == "__main__":
     )
 
     with open(DATA_PATH / "tal_noisemaker_presets.json", "rb") as f:
-        presets = json.load(f)
+        presets_json = json.load(f)
 
     renderer = PresetRenderer(
         sample_rate=SAMPLE_RATE,
@@ -206,11 +208,11 @@ if __name__ == "__main__":
     )
     renderer.set_midi_parameters(MIDI_NOTE_CC, MIDI_NOTE_VEL, MIDI_NOTE_START, MIDI_NOTE_DUR)
 
-    for sound_attribute in npm.SOUND_ATTRIBUTES:
+    for sound_attribute in tpm.SOUND_ATTRIBUTES:
         print(f"Exporting audio for `{sound_attribute}`...")
         start = default_timer()
 
-        current_attribute = getattr(npm, sound_attribute)
+        current_attribute = getattr(tpm, sound_attribute)
 
         path_to_attribute = EXPORT_PATH / current_attribute.sound_attribute
         path_to_attribute.mkdir()
@@ -219,7 +221,7 @@ if __name__ == "__main__":
             path_to_preset = path_to_attribute / str(i)
             path_to_preset.mkdir()
 
-            output, filenames = generate_eval_audio(renderer, current_attribute, i, NUM_SAMPLES)
+            output, filenames = generate_eval_audio(presets_json, renderer, current_attribute, i, NUM_SAMPLES)
 
             for audio, filename in zip(output, filenames):
                 wavfile.write(path_to_preset / filename, SAMPLE_RATE, audio.reshape(-1, audio.shape[0]))

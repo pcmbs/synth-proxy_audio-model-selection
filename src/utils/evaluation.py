@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader
 import torchmetrics.functional as tm_functional
 from torchmetrics.functional import pearson_corrcoef
 
-from data.tal_noisemaker import SoundAttributesRankingDataset
+from data import SoundAttributesRankingDataset
 from utils.embeddings import compute_embeddings
 from utils import reduce_fn as r_fn
 

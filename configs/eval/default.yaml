@@ -1,3 +1,0 @@
-defaults:
-  - nearest_neighbors: relative_pairwise_dists
-  - sound_attributes_ranking: tal_noisemaker
