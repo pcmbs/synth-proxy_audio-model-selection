@@ -15,12 +15,12 @@ https://doi.org/10.1109/TASLP.2024.3376984
 
 """
 
+from contextlib import nullcontext
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 import torch
 from torch import nn, autocast
-from contextlib import nullcontext
 
 from models.efficientat_2.dymn.model import get_model as get_dymn
 from models.efficientat_2.mn.model import get_model as get_mn

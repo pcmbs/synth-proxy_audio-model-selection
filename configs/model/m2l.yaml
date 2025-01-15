@@ -1,0 +1,6 @@
+encoder:
+  _target_: models.m2l.M2LWrapper
+  extract_features: false
+
+name: m2l
+group: m2l
