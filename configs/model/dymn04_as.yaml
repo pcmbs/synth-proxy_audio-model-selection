@@ -1,0 +1,7 @@
+encoder:
+  _target_: models.efficientat_2.EfficientATWrapper
+  model_name: dymn04_as
+  return_fmaps: false
+
+name: ${.encoder.model_name}
+group: mn

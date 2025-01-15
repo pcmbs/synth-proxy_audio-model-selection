@@ -10,6 +10,7 @@ Github Repo: https://github.com/facebookresearch/AudioMAE/tree/main
   year = {2022}
 }
 """
+
 import os
 import sys
 from contextlib import contextmanager
@@ -28,7 +29,7 @@ from models.audiomae.nets.models_mae_encoder_only import mae_vit_base_patch16
 load_dotenv()  # take environment variables from .env for checkpoints folder
 # path to download/load checkpoints
 CKPT_FOLDER = Path(os.environ["PROJECT_ROOT"]) / "checkpoints"
-torch.hub.set_dir(CKPT_FOLDER)
+torch.hub.set_dir(Path(os.environ["PROJECT_ROOT"]))
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -123,7 +124,7 @@ class AudioMAEWrapper(nn.Module):
         return 44_100
 
     @property
-    def channels(self) -> int:
+    def in_channels(self) -> int:
         return 1
 
     @property

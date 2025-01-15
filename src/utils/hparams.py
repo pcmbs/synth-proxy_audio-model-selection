@@ -53,9 +53,7 @@ def log_hyperparameters(
         hparams["model/num_params"] = sum(p.numel() for p in encoder.parameters())
 
     # get embedding size for one second of audio
-    one_second_input = torch.rand(
-        (1, encoder.channels, encoder.sample_rate), device=DEVICE
-    )
+    one_second_input = torch.rand((1, encoder.in_channels, encoder.sample_rate), device=DEVICE)
 
     wandb.run.summary["model/emb_size_per_sec"] = getattr(reduce_fn, cfg.reduce_fn)(
         encoder(one_second_input).detach()
@@ -64,7 +62,7 @@ def log_hyperparameters(
     ##### Save hparams and hydra config
     wandb.config.update(hparams)
     # hydra config is saved under <project_name>/Runs/<run_id>/Files/.hydra
-    wandb.save(
-        glob_str=os.path.join(cfg.paths.get("output_dir"), ".hydra", "*.yaml"),
-        base_path=cfg.paths.get("output_dir"),
-    )
+    # wandb.save(
+    #     glob_str=os.path.join(cfg.paths.get("output_dir"), ".hydra", "*.yaml"),
+    #     base_path=cfg.paths.get("output_dir"),
+    # )

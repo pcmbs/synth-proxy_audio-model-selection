@@ -19,6 +19,7 @@ Wrapper class around PaSST models for integration into the current pipeline.
 stripped down version of the PaSST repo available at
 https://github.com/kkoutini/passt_hear21/tree/main
 """
+
 import os
 from dotenv import load_dotenv
 import torch
@@ -100,7 +101,7 @@ class PasstWrapper(nn.Module):
         return 32_000
 
     @property
-    def channels(self) -> int:
+    def in_channels(self) -> int:
         return 1
 
     @property

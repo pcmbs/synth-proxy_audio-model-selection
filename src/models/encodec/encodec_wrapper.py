@@ -10,6 +10,7 @@ Wrapper class around the encodec models for integration into the current pipelin
 
 Official Repo: https://github.com/facebookresearch/encodec/tree/main 
 """
+
 from pathlib import Path
 from typing import Optional, Union
 
@@ -36,16 +37,14 @@ class EncodecWrapper(nn.Module):
                 repository=repository, segment=segment, overlap=overlap
             )
         else:
-            raise ValueError(
-                f"model needs to be '24khz' or '48khz', but '{model}' was given"
-            )
+            raise ValueError(f"model needs to be '24khz' or '48khz', but '{model}' was given")
 
     @property
     def segment(self) -> None:
         return self.encoder.segment
 
     @property
-    def channels(self) -> int:
+    def in_channels(self) -> int:
         return self.encoder.channels
 
     @property

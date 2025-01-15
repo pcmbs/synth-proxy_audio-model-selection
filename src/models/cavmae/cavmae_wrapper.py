@@ -13,6 +13,7 @@ url={https://openreview.net/forum?id=QPtMRyk5rb}
 }
 
 """
+
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -58,7 +59,7 @@ class CAVMAEWrapper(nn.Module):
         return 44_100
 
     @property
-    def channels(self) -> int:
+    def in_channels(self) -> int:
         return 1
 
     @property

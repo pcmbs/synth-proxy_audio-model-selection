@@ -113,8 +113,8 @@ def _compute_corrcoeff_for_preset(
         num_samples=-1,
         data_sample_rate=dataset.sample_rate,
         encoder_sample_rate=encoder.sample_rate,
-        encoder_channels=encoder.channels,
-        encoder_frame_length=encoder.segment,
+        encoder_channels=encoder.in_channels,
+        encoder_frame_length=hasattr(encoder, "segment") or None,
         pbar=False,
     )
 
