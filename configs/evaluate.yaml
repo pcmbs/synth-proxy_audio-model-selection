@@ -15,7 +15,7 @@ defaults:
 
   # function used to calculate the distance matrix of the sound embeddings
   # (must be the name of a torchmetrics.functional function)
-  - distance_fn: pairwise_manhattan_distance
+  - distance_fn: l1
 
 # seed for random number generators in pytorch, numpy and python.random
 seed: 667
