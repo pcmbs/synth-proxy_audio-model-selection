@@ -4,6 +4,7 @@ Wrapper class around a torchopenl3 model for integration into the current pipeli
 [1] Gyanendra Das, Humair Raj Khan, Joseph Turian (2021). torchopenl3 (version 1.0.1). 
 DOI 10.5281/zenodo.5168808, https://github.com/torchopenl3/torchopenl3.
 """
+
 import os
 from functools import partial
 
@@ -52,7 +53,7 @@ class TorchOpenL3Wrapper(nn.Module):
         return None
 
     @property
-    def channels(self) -> int:
+    def in_channels(self) -> int:
         return 1
 
     @property

@@ -1,5 +1,6 @@
 """
 """
+
 import torch
 from torch import nn
 import torchaudio.functional as Fa
@@ -49,7 +50,7 @@ class MelModel(nn.Module):
         return 44_100
 
     @property
-    def channels(self) -> int:
+    def in_channels(self) -> int:
         return 1
 
     @property

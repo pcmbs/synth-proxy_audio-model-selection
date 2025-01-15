@@ -22,7 +22,7 @@ from . import hear_mn
 
 load_dotenv()  # take environment variables from .env for checkpoints folder
 # path to download/load checkpoints
-torch.hub.set_dir(Path(os.environ["PROJECT_ROOT"]) / "checkpoints")
+torch.hub.set_dir(Path(os.environ["PROJECT_ROOT"]))
 
 
 # Mono input sounds @32 kHz which get split based on a window size of 160ms with a hop size of 50ms.
@@ -56,7 +56,7 @@ class EfficientATWrapper(nn.Module):
         return 32_000
 
     @property
-    def channels(self) -> int:
+    def in_channels(self) -> int:
         return 1
 
     @property

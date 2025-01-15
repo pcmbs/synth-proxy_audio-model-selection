@@ -78,6 +78,13 @@ def global_max_pool_time(embeddings: torch.Tensor) -> torch.Tensor:
     return embeddings.amax(-1)
 
 
+def identity(x: torch.Tensor) -> torch.Tensor:
+    """
+    Do not apply any reduction on the input tensor.
+    """
+    return x
+
+
 if __name__ == "__main__":
     embeddings = torch.rand((10, 128, 500))
 
