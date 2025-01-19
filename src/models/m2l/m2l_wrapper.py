@@ -38,6 +38,8 @@ class M2LWrapper(nn.Module):
         self.extract_features = extract_features
         self.max_batch_size = max_batch_size
 
+        self.model.eval()
+
     @property
     def sample_rate(self) -> int:
         """Return the required input audio signal's sample rate."""
@@ -46,7 +48,7 @@ class M2LWrapper(nn.Module):
     @property
     def name(self) -> str:
         """Return the name of the model."""
-        return "m2l"
+        return f"m2l_{'features' if self.extract_features else ''}"
 
     @property
     def in_channels(self) -> int:

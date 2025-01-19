@@ -119,9 +119,6 @@ class EfficientATWrapper(nn.Module):
 # last feature map gets adaptive pool2d
 
 if __name__ == "__main__":
-    from models.efficientat_2.mn.model import pretrained_models
-    from models.efficientat_2.dymn.model import pretrained_models
-
     encoder = EfficientATWrapper(model_name="dymn04_as", return_fmaps=False)
     audio = torch.empty((1, 1, 32_000 * 5)).uniform_(-1, 1)
     embeddings = encoder(audio)
