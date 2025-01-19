@@ -5,6 +5,7 @@ einops
 fastapi
 hydra-core
 hydra-colorlog
+laion-clap
 lightning
 omegaconf
 music2latent

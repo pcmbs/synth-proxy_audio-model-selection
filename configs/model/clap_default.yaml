@@ -1,0 +1,6 @@
+encoder:
+  _target_: models.clap.ClapWrapper
+  enable_fusion: False
+
+name: clap_default
+group: clap
