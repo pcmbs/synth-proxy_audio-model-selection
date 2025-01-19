@@ -1,0 +1,6 @@
+encoder:
+  _target_: models.clap.ClapWrapper
+  model_name: music_audioset
+
+name: clap_${.encoder.model_name}
+group: clap
