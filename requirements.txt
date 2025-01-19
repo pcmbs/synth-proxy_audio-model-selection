@@ -1,6 +1,7 @@
 --extra-index-url https://download.pytorch.org/whl/cu118
 -e .
 dawdreamer
+descript-audio-codec
 einops
 fastapi
 hydra-core

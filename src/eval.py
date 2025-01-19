@@ -87,7 +87,7 @@ def evaluate(cfg: DictConfig) -> None:
 
 
 if __name__ == "__main__":
-    import sys
+    # import sys
 
     # sys.argv = ["evaluate.py", "debug=with_logger"]
     # check if program in debug mode, and set the corresponding config if so
