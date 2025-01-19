@@ -8,14 +8,14 @@ defaults:
   - debug: null
 
   # model to evaluate
-  - model: passt_s_swa_p16_128_ap476 #openl3_mel256_music_6144 #encodec48khz
+  - model: ???
 
   # function used to reduce the embedding dimensionality
-  - reduce_fn: identity
+  - reduce_fn: ???
 
   # function used to calculate the distance matrix of the sound embeddings
   # (must be the name of a torchmetrics.functional function)
-  - distance_fn: l1
+  - distance_fn: ???
 
 # seed for random number generators in pytorch, numpy and python.random
 seed: 667

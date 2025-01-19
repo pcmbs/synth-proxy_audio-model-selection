@@ -42,9 +42,7 @@ class EfficientATWrapper(nn.Module):
     https://github.com/fschmid56/EfficientAT/blob/main/inference.py
     """
 
-    def __init__(
-        self, model_name: str, return_fmaps: bool = False, reduction: str = "identity", cuda: bool = True
-    ) -> None:
+    def __init__(self, model_name: str, return_fmaps: bool = False, cuda: bool = True) -> None:
         super().__init__()
         if model_name.startswith("dymn"):
             self.model = get_dymn(width_mult=NAME_TO_WIDTH(model_name), pretrained_name=model_name)
@@ -56,7 +54,6 @@ class EfficientATWrapper(nn.Module):
         self.model_name = model_name
         self.model.eval()
 
-        self.reduce_fn = getattr(reduce_fn, reduction)
         self.cuda = cuda
         self.return_fmaps = return_fmaps
 

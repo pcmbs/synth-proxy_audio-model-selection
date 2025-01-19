@@ -1,0 +1,7 @@
+encoder:
+  _target_: models.dac.DacWrapper
+  model_type: 44khz
+  return_type: z
+
+name: dac_${.encoder.model_type}_${.encoder.return_type}
+group: dac
