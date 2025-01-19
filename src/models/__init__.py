@@ -1,1 +1,1 @@
-from . import encodec, openl3, passt, efficientat, efficientat_2, cavmae, audiomae, mel_only
+from . import audiomae, cavmae, clap, efficientat, efficientat_2, encodec, m2l, mel_only, openl3, passt
