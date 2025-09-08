@@ -4,10 +4,6 @@ Embeddings reduction functions.
 
 import torch
 
-# TODO: try to process the embeddings as follow:
-# - concat features from different layers (see papers in Zotero)
-# - random projection
-
 
 def flatten(embeddings: torch.Tensor) -> torch.Tensor:
     """

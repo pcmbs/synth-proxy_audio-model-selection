@@ -1,0 +1,27 @@
+# @package _global_
+
+defaults:  
+  - _self_  
+  - override /logger@_group_: null
+  # - override /hydra/hydra_logging@_group_: none 
+  - override /hydra/job_logging@_group_: none 
+  
+task_name: "debug"
+
+hydra:  
+  output_subdir: null  
+  run:  
+    dir: .
+
+# logger: null
+
+audio_length: 1.0
+
+eval:
+  nearest_neighbors:
+    data:
+      num_samples: 32
+    metric:
+      relative_pairwise_dists:
+        num_samples: 2
+        num_neighbors: 5

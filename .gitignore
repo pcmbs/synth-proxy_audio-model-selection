@@ -12,15 +12,10 @@ Thumbs.db
 __pycache__/
 
 logs/
-notebooks/
 wandb/
-!configs/wandb/
+!configs/wandb
 
-data/*vst3
-data/sound_attributes_ranking_dataset/
-data/nsynth-lite/
-checkpoints/
-!checkpoints/encodec*
-resources/
+data/
+!data/tal_noisemaker_presets.json
 
 div_check/

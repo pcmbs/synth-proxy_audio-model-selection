@@ -14,7 +14,6 @@ SOUND_ATTRIBUTES = [
     "filter_cutoff",
     "filter_decay",
     "filter_resonance",
-    "frequency_mod",
     "lfo_amount_on_amp",
     "lfo_amount_on_filter",
     "lfo_amount_on_pitch",
@@ -362,56 +361,6 @@ filter_resonance = PresetModList(
         PresetMod(  # filter_resonance_9
             preset="LD Technoshocker FN",
             interval=(0.2, 0.95),
-        ),
-    ],
-)
-frequency_mod = PresetModList(
-    sound_attribute="frequency_mod",
-    param_idx=36,  # `Osc 2 FM`
-    # set `Lfo 1 Keytrigger` and `Lfo 2 Keytrigger` to 1.0
-    extra_params=((46, 1.0), (48, 1.0)),
-    preset_mods=[
-        PresetMod(  # frequency_mod_0
-            preset="KB Smooth Sine TAL",
-            interval=(0.0, 1.0),
-            # set `Transpose` to 0.5 and `Delay Wet` to 0
-            extra_params=((40, 0.5), (78, 0.0)),
-        ),
-        PresetMod(  # frequency_mod_1
-            preset="ARP C64 FN",
-            interval=(0.0, 0.95),
-        ),
-        PresetMod(  # frequency_mod_2
-            preset="BS 7th Gates FN",
-            interval=(0.0, 1.0),
-        ),
-        PresetMod(  # frequency_mod_3
-            preset="BS Detuned FN",
-            interval=(0.0, 0.95),
-        ),
-        PresetMod(  # frequency_mod_4
-            preset="BS Jelly Mountain AS",
-            interval=(0.0, 0.95),
-        ),
-        PresetMod(  # frequency_mod_5
-            preset="CH Chordionator II FN",
-            interval=(0.0, 1.0),
-        ),
-        PresetMod(  # frequency_mod_6
-            preset="DR Snare Dry TAL",
-            interval=(0.0, 1.0),
-        ),
-        PresetMod(  # frequency_mod_7
-            preset="FX Metallica FN",
-            interval=(0.0, 1.0),
-        ),
-        PresetMod(  # frequency_mod_8
-            preset="FX Noiz3machin3 FN",
-            interval=(0.0, 1.0),
-        ),
-        PresetMod(  # frequency_mod_9
-            preset="LD Everglade Walk TAL",
-            interval=(0.0, 1.0),
         ),
     ],
 )
@@ -993,12 +942,7 @@ if __name__ == "__main__":
 
     load_dotenv()
 
-    PATH_TO_PLUGIN = (
-        Path(os.getenv("PROJECT_ROOT"))
-        / "data"
-        / "TAL-NoiseMaker"
-        / "TAL-NoiseMaker.vst3"
-    )
+    PATH_TO_PLUGIN = Path(os.getenv("PROJECT_ROOT")) / "data" / "TAL-NoiseMaker" / "TAL-NoiseMaker.vst3"
 
     # Load TAL-NoiseMaker
     synth = load_plugin(

@@ -1,4 +1,4 @@
---extra-index-url https://download.pytorch.org/whl/cu118
+--extra-index-url https://download.pytorch.org/whl/cu118 ; platform_system == "Windows", platform_system == "Linux"
 -e .
 dawdreamer
 descript-audio-codec
